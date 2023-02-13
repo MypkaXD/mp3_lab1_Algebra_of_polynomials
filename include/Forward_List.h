@@ -19,7 +19,57 @@ private:
 			m_next = other.m_next;
 		}
 	};
+
 	Node* m_first = nullptr;
+
+	size_t node_distance(Node* lnode, Node* rnode) {
+		Node* temp = lnode;
+		size_t distance = 0;
+		while (temp != rnode) {
+			distance++;
+			temp = temp->m_next;
+		}
+		return distance;
+	}
+
+	Node* before_medium_node(Node* lnode, Node* rnode) {
+		Node* temp = lnode;
+		for (int i = 0; i < node_distance(lnode, rnode) / 2 - 1; i++)
+			temp = temp->m_next;
+		return temp;
+	}
+
+	void merge(Node* before_start, Node* end) {
+		Node* medium = before_medium_node(before_start->m_next, end)->m_next;
+		Node* lpart = before_start->m_next, * rpart = medium, * new_list = new Node, * current = new_list;
+
+		while (lpart != medium || rpart != end) {
+			if (rpart == end || (lpart != medium && lpart->m_elem <= rpart->m_elem)) { // Сортирует в порядке возрастания (<=), если надо в порядке убывания, меня знак на (>=) 
+				current->m_next = lpart;
+				lpart = lpart->m_next;
+			}
+			else {
+				current->m_next = rpart;
+				rpart = rpart->m_next;
+			}
+			current = current->m_next;
+		}
+
+		before_start->m_next = new_list->m_next;
+		current->m_next = end;
+		delete new_list;
+	}
+
+
+	void mergesort(Node* before_start, Node* end) {
+		if (node_distance(before_start->m_next, end) > 2) {
+			mergesort(before_start, before_medium_node(before_start->m_next, end)->m_next);
+			mergesort(before_medium_node(before_start->m_next, end), end);
+		}
+
+		if (node_distance(before_start->m_next, end) > 1) merge(before_start, end);
+	}
+
 public:
 	class iterator {
 	private:
@@ -258,6 +308,13 @@ public:
 			temp1 = temp2;
 		}
 		m_first = nullptr;
+	}
+
+	void sort() {
+		Node* before_first = new Node(T(), m_first);
+		mergesort(before_first, nullptr);
+		m_first = before_first->m_next;
+		delete before_first;
 	}
 
 	iterator insert_after(iterator prev, T value) {
