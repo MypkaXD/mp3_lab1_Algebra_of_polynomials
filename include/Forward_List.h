@@ -1,8 +1,5 @@
-#ifndef FORWARD_LIST_H
-#define FORWARD_LIST_H
 
-#define size_t int
-
+#include <initializer_list>
 template <class T>
 class List {
 private:
@@ -105,26 +102,19 @@ public:
 		T& operator*() {
 			return m_ptr->m_elem;
 		}
-		friend bool operator!=(const iterator& first, const iterator& second) {
-			return (first.m_ptr != second.m_ptr);
+		T& next() {
+			return m_ptr->m_next->m_elem;
 		}
-		friend bool operator==(const iterator& first, const iterator& second) {
-			return !(second == first);
+		bool operator!=(iterator& second) {
+			return (m_ptr != second.m_ptr);
+		}
+		bool operator==(const iterator& second) {
+			return m_ptr != second.m_ptr;
 		}
 	};
+
+
 	List() {}
-	explicit List(const size_t size) {
-		if (size == 0)
-			return;
-		if (size < 0)
-			throw ("ERROR: SIZE SHOULD BE GRERATER THAN ZERO");
-		m_first = new Node();
-		Node* temp = m_first;
-		for (size_t count = 1; count < size; ++count) {
-			temp->m_next = new Node();
-			temp = temp->m_next;
-		}
-	}
 	List(size_t size, T elem) {
 		if (size == 0)
 			return;
@@ -346,12 +336,6 @@ public:
 		return iterator(temp);
 	}
 	iterator end() const {
-		Node* temp = m_first;
-		for (size_t count = 0; count < size(); ++count) {
-			temp = temp->m_next;
-		}
-		return iterator(temp);
+		return iterator(nullptr);
 	}
 };
-
-#endif // !FORWARD_LIST_H
