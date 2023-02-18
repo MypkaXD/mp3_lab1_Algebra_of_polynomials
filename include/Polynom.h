@@ -2,6 +2,7 @@
 #include "Forward_List.h"
 #include <iostream>
 #include <exception>
+#include <math.h>
 
 class Polynom {
 
@@ -45,6 +46,30 @@ class Polynom {
 
 		int getZ() {
 			return z;
+		}
+
+		void changeX(int i) {
+			x += i;
+		}
+
+		void changeY(int i) {
+			y += i;
+		}
+
+		void changeZ(int i) {
+			z += i;
+		}
+
+		void setX(int i) {
+			x = i;
+		}
+
+		void setY(int i) {
+			y = i;
+		}
+
+		void setZ(int i) {
+			z = i;
 		}
 
 		Monom& operator+=(const Monom& m) {
@@ -188,6 +213,18 @@ public:
 
 	}
 
+	bool operator==(const Polynom& other) const noexcept { // вопрос про сравнения длин xDD
+		for (auto count = data.begin(), count_other = other.data.begin(); count != data.end(), count_other != other.data.end(); ++count, ++count_other)
+			if ((*count).getCoef() != (*count_other).getCoef() || (*count).getX() != (*count_other).getX() || (*count).getY() != (*count_other).getY() || (*count).getZ() != (*count_other).getZ())
+				return false;
+		return true;
+	}
+
+	bool operator!=(const Polynom& other) const noexcept {
+		return (!(*this == other));
+	}
+
+
 	List<Monom>::iterator begin() {
 		return data.begin();
 	}
@@ -201,6 +238,72 @@ public:
 			std::cout << (*it).getCoef() << " " << (*it).getX() << " " << (*it).getY() << " " << (*it).getZ() << '\n';
 		}
 
+	}
+
+	void differentiationX() { // дифференцируем по переменной x
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			if ((*count).getX() == 0)
+				continue;
+			else
+				(*count).changeX(-1);
+		}
+	}
+
+	void differentiationY() { // дифференцируем по переменной y
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			if ((*count).getY() == 0)
+				continue;
+			else
+				(*count).changeY(-1);
+		}
+	}
+
+	void differentiationZ() { // дифференцируем по переменной z
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			if ((*count).getZ() == 0)
+				continue;
+			else
+				(*count).changeZ(-1);
+		}
+	}
+
+	void integrationX() { // интегрирование по переменной x
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			(*count).changeX(+1);
+		}
+	}
+
+	void integrationY() { // интегрирование по переменной y
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			(*count).changeY(+1);
+		}
+	}
+
+	void integrationZ() { // интегрирование по переменной z
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			(*count).changeZ(+1);
+		}
+	}
+
+	double point_calculation(double x, double y, double z) {
+		double sum = .0;
+
+		for (auto count = data.begin(); count != data.end(); ++count)
+			sum += (*count).getCoef() * pow(x, (*count).getX()) * pow(y, (*count).getY()) * pow(z, (*count).getZ());
+
+		return sum;
+	}
+
+	void powPolynom(int degree) {
+		if (degree < 0)
+			throw std::exception("CANT POW WITH NEGATIVE POWER");
+		else {
+			for (auto count = data.begin(); count != data.end(); ++count) {
+				(*count).setX(degree * (*count).getX());
+				(*count).setY(degree * (*count).getY());
+				(*count).setZ(degree * (*count).getZ());
+			}
+		}
 	}
 
 };
