@@ -18,3 +18,34 @@ TEST(Polynom, can_read_polynom_correctly)
 
 }
 
+TEST(Polynom, sums_polynoms_correctly)
+{
+	Polynom p1("1 1 0 0 -2 0 1 0");
+	Polynom p2("3 1 0 0 3 0 1 0");
+	ASSERT_NO_THROW((p1 + p2).print());
+
+}
+
+TEST(Polynom, subs_polynoms_correctly)
+{
+	Polynom p1("1 1 0 0 2 0 1 0");
+	Polynom p2("3 1 0 0 3 0 1 0");
+	ASSERT_NO_THROW((p1 - p2).print());
+
+}
+
+TEST(Polynom, muls_polynoms_correctly)
+{
+	Polynom p1("1 1 0 0 2 0 1 0");
+	Polynom p2("3 1 0 0 3 0 1 0");
+	ASSERT_NO_THROW((p1 * p2).print());
+
+}
+
+TEST(Polynom, divs_polynoms_correctly)
+{
+	Polynom p1("1 2 0 0 2 1 0 0");
+	Polynom p2("1 1 0 0");
+	ASSERT_NO_THROW((p1 / p2).print());
+
+}

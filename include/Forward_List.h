@@ -162,7 +162,7 @@ public:
 	const List& operator=(const List& other) {
 		if (this == &other)
 			return *this;
-		this->clear();
+		clear();
 		m_first = new Node(other.m_first->m_elem);
 		Node* temp1 = m_first;
 		Node* temp2 = other.m_first->m_next;
@@ -288,7 +288,8 @@ public:
 	}
 
 	void clear() {
-		if (empty()) throw ("ERROR: list is empty");
+		if (empty())
+			return;
 
 		Node* temp1 = m_first;
 		Node* temp2;
