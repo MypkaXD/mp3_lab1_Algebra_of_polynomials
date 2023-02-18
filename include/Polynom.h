@@ -33,7 +33,7 @@ class Polynom {
 		}
 
 		// other comparing to this is: -1 less 0 equal 1 greater
-		int comp(Monom other) {
+		int comp(Monom& other) {
 
 			if (x != other.x)
 				return (x > other.x) ? -1 : 1;
@@ -121,7 +121,7 @@ class Polynom {
 
 	List<Monom> data;
 	
-	void addMonom(Monom m) {
+	void addMonom(Monom& m) {
 		
 		if (data.empty()) {
 			data.push_front(m);
