@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "Forward_List.h"
 #include <iostream>
 #include <exception>
@@ -36,11 +36,20 @@ class Polynom {
 		int comp(Monom& other) {
 
 			if (x != other.x)
-				return (x > other.x) ? -1 : 1;
+				if (x > other.x)
+					return -1;
+				else
+					return 1;
 			if (y != other.y)
-				return (y > other.y) ? -1 : 1;
+				if (y > other.y)
+					return -1;
+				else
+					return 1;
 			if (z != other.z)
-				return (z > other.z) ? -1 : 1;
+				if (z > other.z)
+					return -1;
+				else
+					return 1;
 
 			return 0;
 
@@ -283,7 +292,7 @@ public:
 
 	}
 
-	bool operator==(const Polynom& other) const noexcept { // вопрос про сравнения длин xDD
+	bool operator==(const Polynom& other) const noexcept { // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ xDD
 		for (auto count = data.begin(), count_other = other.data.begin(); count != data.end(), count_other != other.data.end(); ++count, ++count_other)
 			if ((*count).getCoef() != (*count_other).getCoef() || (*count).getX() != (*count_other).getX() || (*count).getY() != (*count_other).getY() || (*count).getZ() != (*count_other).getZ())
 				return false;
@@ -426,7 +435,7 @@ public:
 
 	}
 
-	void differentiationX() { // дифференцируем по переменной x
+	void differentiationX() { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ x
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			if ((*count).getX() == 0)
 				continue;
@@ -435,7 +444,7 @@ public:
 		}
 	}
 
-	void differentiationY() { // дифференцируем по переменной y
+	void differentiationY() { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ y
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			if ((*count).getY() == 0)
 				continue;
@@ -444,7 +453,7 @@ public:
 		}
 	}
 
-	void differentiationZ() { // дифференцируем по переменной z
+	void differentiationZ() { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ z
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			if ((*count).getZ() == 0)
 				continue;
@@ -453,19 +462,19 @@ public:
 		}
 	}
 
-	void integrationX() { // интегрирование по переменной x
+	void integrationX() { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ x
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			(*count).changeX(+1);
 		}
 	}
 
-	void integrationY() { // интегрирование по переменной y
+	void integrationY() { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ y
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			(*count).changeY(+1);
 		}
 	}
 
-	void integrationZ() { // интегрирование по переменной z
+	void integrationZ() { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ z
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			(*count).changeZ(+1);
 		}
@@ -480,4 +489,19 @@ public:
 		return sum;
 	}
 
+	void pow_polinom(int n) {
+		if (n < 0)
+			throw std::exception("CANT POW WITH N LESS THAN ZERO");
+		else if (n == 0) {
+			data.clear();
+			data.push_front(Monom(1, 0, 0, 0));
+			return;
+		}
+		else {
+			Polynom temp = *this;
+			for (int count = 1; count < n; ++count) {
+				*this = temp * *this;
+			}
+		}
+	}
 };
