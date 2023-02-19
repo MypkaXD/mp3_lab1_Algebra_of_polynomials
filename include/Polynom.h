@@ -148,7 +148,7 @@ class Polynom {
 				*it += m;
 				return;
 			}
-			if (m.comp(*it) == -1) {
+			if (m.comp(*it) == 1) {
 
 				if (it == data.begin()) {
 					data.push_front(m);
