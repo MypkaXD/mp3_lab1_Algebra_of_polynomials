@@ -164,12 +164,24 @@ TEST(Polynom, if_power_eq_0_return_1) {
 	ASSERT_EQ(p1, p2);
 }
 
-TEST(Polynom, can_correctly_pow) {
+TEST(Polynom, can_correctly_pow_v1) {
 
 	Polynom p1("1 2 3 4 1 1 1 1");
 	Polynom p2("1 4 6 8 2 3 4 5 1 2 2 2");
 
 	p1.pow_polinom(2);
+
+	p1.print();
+
+	ASSERT_EQ(p1, p2);
+}
+
+TEST(Polynom, can_correctly_pow_v2) {
+
+	Polynom p1("1 2 3 4 1 1 1 1");
+	Polynom p2("1 6 9 12 3 5 7 9 3 4 5 6 1 3 3 3");
+
+	p1.pow_polinom(3);
 
 	p1.print();
 
