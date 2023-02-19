@@ -73,6 +73,7 @@ public:
 		friend class List;
 		Node* m_ptr = nullptr;
 	public:
+		iterator() {}
 		iterator(Node* ptr) : m_ptr(ptr) {}
 		iterator(const iterator& other) : m_ptr(other.m_ptr) {}
 		~iterator() {
