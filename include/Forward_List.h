@@ -1,11 +1,11 @@
-
+п»ї
 #include <initializer_list>
 template <class T>
 class List {
 private:
 	struct Node {
-		T m_elem = T(); // элемент 
-		Node* m_next = nullptr; // указатель на следующий элемент
+		T m_elem = T(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
+		Node* m_next = nullptr; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		Node(T elem, Node* next) : m_elem(elem), m_next(next) {}
 		Node(T elem) : m_elem(elem) {}
 		Node() {}
@@ -41,7 +41,7 @@ private:
 		Node* lpart = before_start->m_next, * rpart = medium, * new_list = new Node, * current = new_list;
 
 		while (lpart != medium || rpart != end) {
-			if (rpart == end || (lpart != medium && lpart->m_elem <= rpart->m_elem)) { // Сортирует в порядке возрастания (<=), если надо в порядке убывания, меня знак на (>=) 
+			if (rpart == end || (lpart != medium && lpart->m_elem <= rpart->m_elem)) { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (<=), пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ (>=) 
 				current->m_next = lpart;
 				lpart = lpart->m_next;
 			}
@@ -92,7 +92,7 @@ public:
 			m_ptr += 1;
 			return temp;
 		}
-		iterator operator+(size_t n) { // двигает не на ++ а на больше
+		iterator operator+(size_t n) { // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ ++ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 			iterator temp(*this);
 			for (size_t count = 0; count < n; ++count) {
 				temp.m_ptr = temp.m_ptr->m_next;
