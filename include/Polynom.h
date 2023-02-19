@@ -62,6 +62,18 @@ class Polynom {
 			return z;
 		}
 
+		void changeX(int i) {
+			x += i;
+		}
+
+		void changeY(int i) {
+			y += i;
+		}
+
+		void changeZ(int i) {
+			z += i;
+		}
+
 		//for division
 		int isNotLessInEveryVariable(const Monom& m) const {
 			if (x >= m.x && y >= m.y && z >= m.z) {
@@ -82,12 +94,12 @@ class Polynom {
 		}
 
 		Monom operator+(const Monom& m) const {
-			
+
 			if (x == m.x && y == m.y && z == m.z)
 				return Monom(coef + m.coef, x, y, z);
 			else
 				throw std::exception("CANT SUM UNEQUAL MONOMS");
-			
+
 		}
 
 		Monom operator-(const Monom& m) const {
@@ -120,9 +132,9 @@ class Polynom {
 	};
 
 	List<Monom> data;
-	
+
 	void addMonom(Monom& m) {
-		
+
 		if (data.empty()) {
 			data.push_front(m);
 			return;
@@ -165,7 +177,7 @@ public:
 		data = p.data;
 	}
 
-	Polynom(const Monom& m) {
+	Polynom(Monom& m) {
 		data = List<Monom>();
 		addMonom(m);
 	}
@@ -180,7 +192,7 @@ public:
 		double power = 1;                                //after dot
 		int i = 0;
 		bool f = false;
-		
+
 		if (str[0] == '-') {
 			f = true;
 			i++;
@@ -225,7 +237,7 @@ public:
 
 	//Assuming that str contains only one polinom and it is valid. Example: "12 4 15 1 .4 21 1 1 9.7 0 1 0"
 	Polynom(const char* str) {
-		
+
 		int counter = 0;
 		int i = 0;
 
@@ -241,7 +253,7 @@ public:
 					i = j;
 					counter++;
 				}
-				
+
 				else if (counter == 1) {                    //x
 					nx = stoi(str + i, j - i);
 					j++;
@@ -269,6 +281,17 @@ public:
 			}
 		}
 
+	}
+
+	bool operator==(const Polynom& other) const noexcept { // вопрос про сравнения длин xDD
+		for (auto count = data.begin(), count_other = other.data.begin(); count != data.end(), count_other != other.data.end(); ++count, ++count_other)
+			if ((*count).getCoef() != (*count_other).getCoef() || (*count).getX() != (*count_other).getX() || (*count).getY() != (*count_other).getY() || (*count).getZ() != (*count_other).getZ())
+				return false;
+		return true;
+	}
+
+	bool operator!=(const Polynom& other) const noexcept {
+		return (!(*this == other));
 	}
 
 	List<Monom>::iterator begin() const {
@@ -403,5 +426,58 @@ public:
 
 	}
 
-};
+	void differentiationX() { // дифференцируем по переменной x
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			if ((*count).getX() == 0)
+				continue;
+			else
+				(*count).changeX(-1);
+		}
+	}
 
+	void differentiationY() { // дифференцируем по переменной y
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			if ((*count).getY() == 0)
+				continue;
+			else
+				(*count).changeY(-1);
+		}
+	}
+
+	void differentiationZ() { // дифференцируем по переменной z
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			if ((*count).getZ() == 0)
+				continue;
+			else
+				(*count).changeZ(-1);
+		}
+	}
+
+	void integrationX() { // интегрирование по переменной x
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			(*count).changeX(+1);
+		}
+	}
+
+	void integrationY() { // интегрирование по переменной y
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			(*count).changeY(+1);
+		}
+	}
+
+	void integrationZ() { // интегрирование по переменной z
+		for (auto count = data.begin(); count != data.end(); ++count) {
+			(*count).changeZ(+1);
+		}
+	}
+
+	double point_calculation(double x, double y, double z) {
+		double sum = .0;
+
+		for (auto count = data.begin(); count != data.end(); ++count)
+			sum += (*count).getCoef() * pow(x, (*count).getX()) * pow(y, (*count).getY()) * pow(z, (*count).getZ());
+
+		return sum;
+	}
+
+};
