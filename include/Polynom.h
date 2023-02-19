@@ -36,11 +36,20 @@ class Polynom {
 		int comp(Monom& other) {
 
 			if (x != other.x)
-				return (x > other.x) ? -1 : 1;
+				if (x > other.x)
+					return -1;
+				else
+					return 1;
 			if (y != other.y)
-				return (y > other.y) ? -1 : 1;
+				if (y > other.y)
+					return -1;
+				else
+					return 1;
 			if (z != other.z)
-				return (z > other.z) ? -1 : 1;
+				if (z > other.z)
+					return -1;
+				else
+					return 1;
 
 			return 0;
 
@@ -136,7 +145,7 @@ class Polynom {
 				*it += m;
 				return;
 			}
-			if (m.comp(*it) == 1) {
+			if (m.comp(*it) == -1) {
 
 				if (it == data.begin()) {
 					data.push_front(m);

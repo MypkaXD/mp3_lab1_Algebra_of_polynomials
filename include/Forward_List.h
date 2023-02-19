@@ -109,7 +109,7 @@ public:
 			return (m_ptr != second.m_ptr);
 		}
 		bool operator==(const iterator& second) {
-			return m_ptr != second.m_ptr;
+			return m_ptr == second.m_ptr;
 		}
 	};
 
