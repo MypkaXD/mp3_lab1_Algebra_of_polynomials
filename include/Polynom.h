@@ -60,18 +60,6 @@ class Polynom {
 			z += i;
 		}
 
-		void setX(int i) {
-			x = i;
-		}
-
-		void setY(int i) {
-			y = i;
-		}
-
-		void setZ(int i) {
-			z = i;
-		}
-
 		Monom& operator+=(const Monom& m) {
 
 			if (x == m.x && y == m.y && z == m.z)
@@ -292,18 +280,6 @@ public:
 			sum += (*count).getCoef() * pow(x, (*count).getX()) * pow(y, (*count).getY()) * pow(z, (*count).getZ());
 
 		return sum;
-	}
-
-	void powPolynom(int degree) {
-		if (degree < 0)
-			throw std::exception("CANT POW WITH NEGATIVE POWER");
-		else {
-			for (auto count = data.begin(); count != data.end(); ++count) {
-				(*count).setX(degree * (*count).getX());
-				(*count).setY(degree * (*count).getY());
-				(*count).setZ(degree * (*count).getZ());
-			}
-		}
 	}
 
 };
