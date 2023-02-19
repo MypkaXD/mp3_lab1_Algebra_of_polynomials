@@ -36,8 +36,8 @@ TEST(Polynom, subs_polynoms_correctly)
 
 TEST(Polynom, muls_polynoms_correctly)
 {
-	Polynom p1("1 1 0 0 2 0 1 0");
-	Polynom p2("3 1 0 0 3 0 1 0");
+	Polynom p1("1 2 0 0 1 3 0 0");
+	Polynom p2("1 2 0 0 1 3 0 0");
 	ASSERT_NO_THROW((p1 * p2).print());
 
 }

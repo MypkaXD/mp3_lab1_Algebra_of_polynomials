@@ -136,7 +136,7 @@ class Polynom {
 				*it += m;
 				return;
 			}
-			if (m.comp(*it) == -1) {
+			if (m.comp(*it) == 1) {
 
 				if (it == data.begin()) {
 					data.push_front(m);
@@ -165,7 +165,7 @@ public:
 		data = p.data;
 	}
 
-	Polynom(const Monom& m) {
+	Polynom(Monom& m) {
 		data = List<Monom>();
 		addMonom(m);
 	}
