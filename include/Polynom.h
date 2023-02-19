@@ -2,7 +2,6 @@
 #include "Forward_List.h"
 #include <iostream>
 #include <exception>
-#include <math.h>
 
 class Polynom {
 
@@ -17,6 +16,21 @@ class Polynom {
 		Monom() : coef(0), x(0), y(0), z(0) {}
 
 		Monom(double c, int nx, int ny, int nz) : coef(c), x(nx), y(ny), z(nz) {}
+
+		Monom(const Monom& m) {
+			coef = m.coef;
+			x = m.x;
+			y = m.y;
+			z = m.z;
+		}
+
+		Monom& operator=(const Monom& m) {
+			coef = m.coef;
+			x = m.x;
+			y = m.y;
+			z = m.z;
+			return *this;
+		}
 
 		// other comparing to this is: -1 less 0 equal 1 greater
 		int comp(Monom& other) {
@@ -60,6 +74,15 @@ class Polynom {
 			z += i;
 		}
 
+		//for division
+		int isNotLessInEveryVariable(const Monom& m) const {
+			if (x >= m.x && y >= m.y && z >= m.z) {
+				return true;
+			}
+			else
+				return false;
+		}
+
 		Monom& operator+=(const Monom& m) {
 
 			if (x == m.x && y == m.y && z == m.z)
@@ -70,12 +93,48 @@ class Polynom {
 			return *this;
 		}
 
+		Monom operator+(const Monom& m) const {
+
+			if (x == m.x && y == m.y && z == m.z)
+				return Monom(coef + m.coef, x, y, z);
+			else
+				throw std::exception("CANT SUM UNEQUAL MONOMS");
+
+		}
+
+		Monom operator-(const Monom& m) const {
+
+			if (x == m.x && y == m.y && z == m.z)
+				return Monom(coef - m.coef, x, y, z);
+			else
+				throw std::exception("CANT SUM UNEQUAL MONOMS");
+
+		}
+
+		Monom operator/(const Monom& m) const {
+
+			return Monom(coef / m.coef, x - m.x, y - m.y, z - m.z);
+
+		}
+
+		Monom operator*(const Monom& m) const {
+
+			return Monom(coef * m.coef, x + m.x, y + m.y, z + m.z);
+
+		}
+
+		Monom operator*(int c) const {
+
+			return Monom(coef * c, x, y, z);
+
+		}
+
 	};
 
 	List<Monom> data;
-	
+
 	void addMonom(Monom& m) {
-		
+
 		if (data.empty()) {
 			data.push_front(m);
 			return;
@@ -114,32 +173,54 @@ public:
 		data = List<Monom>();
 	}
 
+	Polynom(const Polynom& p) {
+		data = p.data;
+	}
+
+	Polynom(Monom& m) {
+		data = List<Monom>();
+		addMonom(m);
+	}
+
+	Polynom& operator=(const Polynom& p) {
+		data = p.data;
+		return *this;
+	}
+
 	double stod(const char* str, int n) {
-		double res;
+		double res = 0;
 		double power = 1;                                //after dot
-		int i = 1;
-		
-		if (str[0] != '.') {
-			res = (double)((int)str[0] - 48);
-			while (str[i] != '.') {
-				if (i == n)
-					return res;
-				res *= 10.0;
-				res += (double)((int)str[i] - 48);
-				i++;
-			}
+		int i = 0;
+		bool f = false;
+
+		if (str[0] == '-') {
+			f = true;
 			i++;
 		}
-		else 
-			res = 0;
 
+		while (str[i] != '.') {
+			if (i == n) {
+				if (f)
+					return -res;
+				else
+					return res;
+			}
+			res *= 10.0;
+			res += (double)((int)str[i] - 48);
+			i++;
+		}
+		i++;
 
 		while (i < n) {
 			power /= 10.0;
 			res += power * ((double)((int)str[i] - 48));
 			i++;
 		}
-		return res;
+
+		if (f)
+			return -res;
+		else
+			return res;
 	}
 
 	int stoi(const char* str, int n) {
@@ -156,14 +237,15 @@ public:
 
 	//Assuming that str contains only one polinom and it is valid. Example: "12 4 15 1 .4 21 1 1 9.7 0 1 0"
 	Polynom(const char* str) {
-		
+
 		int counter = 0;
 		int i = 0;
 
 		double c;
 		int nx, ny, nz;
+		int j;
 
-		for (int j = 0; true; j++) {
+		for (j = 0; true; j++) {
 			if (str[j] == ' ' || str[j] == '\0') {
 				if (counter == 0) {                         //coefficient
 					c = stod(str + i, j - i);
@@ -171,7 +253,7 @@ public:
 					i = j;
 					counter++;
 				}
-				
+
 				else if (counter == 1) {                    //x
 					nx = stoi(str + i, j - i);
 					j++;
@@ -192,7 +274,7 @@ public:
 					i = j;
 					addMonom(Monom(c, nx, ny, nz));
 					counter = 0;
-					if (str[j] == '\0')
+					if (str[j - 1] == '\0')
 						break;
 				}
 
@@ -212,13 +294,129 @@ public:
 		return (!(*this == other));
 	}
 
-
-	List<Monom>::iterator begin() {
+	List<Monom>::iterator begin() const {
 		return data.begin();
 	}
 
-	List<Monom>::iterator end() {
+	List<Monom>::iterator end() const {
 		return data.end();
+	}
+
+	//operations with polynoms
+	Polynom operator+(const Polynom& p) const {
+		Polynom res;
+		auto it = begin();
+		auto pit = p.begin();
+		while (it != end()) {
+			res.addMonom(*it);
+			++it;
+		}
+		while (pit != p.end()) {
+			res.addMonom(*pit);
+			++pit;
+		}
+		return res;
+
+	}
+
+	Polynom operator-(const Polynom& p) const {
+		Polynom res;
+		auto it = begin();
+		auto pit = p.begin();
+		while (it != end()) {
+			res.addMonom(*it);
+			++it;
+		}
+		while (pit != p.end()) {
+			res.addMonom((*pit) * (-1));
+			++pit;
+		}
+		return res;
+	}
+
+	Polynom operator*(const Polynom& p) const {
+		Polynom res;
+		for (auto pit = begin(); pit != p.end(); ++pit) {
+			for (auto it = p.begin(); it != end(); ++it) {
+				res.addMonom((*it) * (*pit));
+			}
+		}
+		return res;
+	}
+
+	/*
+	//erase zero monoms ()
+	void flush() {
+		while ((*begin()).getCoef() > -0.00001 && (*begin()).getCoef() < 0.00001) {
+			data.pop_front();
+		}
+		auto prev = begin();
+		for (auto it = begin(); it != end(); ++it) {
+			if ((*it).getCoef() > -0.00001 && (*it).getCoef() < 0.00001) {
+				data.erase_after(prev);
+			}
+			prev = it;
+		}
+	}
+	*/
+
+	Polynom operator/(const Polynom& p) const {     //integer division
+		Polynom cp(*this);
+		Polynom res;
+		auto it1 = cp.begin();
+		auto it2 = p.begin();
+		while (it1 != cp.end() && (*it1).isNotLessInEveryVariable(*it2)) {
+			Monom m = (*it1) / (*it2);
+			res.addMonom(m);
+			cp -= p * Polynom(m);
+			cp.data.pop_front();
+			it1 = cp.begin();
+		}
+		return res;
+	}
+
+	Polynom& operator+=(const Polynom& p) {
+		auto pit = p.begin();
+		while (pit != p.end()) {
+			addMonom(*pit);
+			++pit;
+		}
+		return *this;
+	}
+
+	Polynom& operator-=(const Polynom& p) {
+		auto pit = p.begin();
+		while (pit != p.end()) {
+			addMonom((*pit) * (-1));
+			++pit;
+		}
+		return *this;
+	}
+
+	Polynom& operator*=(const Polynom& p) {
+		Polynom cp;
+		for (auto pit = begin(); pit != end(); ++pit) {
+			for (auto it = p.begin(); it != p.end(); ++it) {
+				addMonom((*it) * (*pit));
+			}
+		}
+		*this = cp;
+		return *this;
+	}
+
+	Polynom& operator/=(const Polynom& p) {
+		Polynom cp(*this);
+		Polynom res;
+		auto it1 = cp.begin();
+		auto it2 = p.begin();
+		while ((*it1).isNotLessInEveryVariable(*it2) && it1 != cp.end()) {
+			Monom m = (*it1) / (*it2);
+			res.addMonom(m);
+			cp -= p * Polynom(m);
+			it1 = cp.begin();
+		}
+		*this = res;
+		return *this;
 	}
 
 	void print() {
@@ -283,4 +481,3 @@ public:
 	}
 
 };
-
