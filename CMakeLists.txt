@@ -15,8 +15,8 @@ set(MP2_INCLUDE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 add_subdirectory(include)
 
 if(BUILD_TESTING)
-    add_subdirectory(gtest)
 	add_subdirectory(test)
+	add_subdirectory(3rdparty)
 endif()
 
 
@@ -27,3 +27,4 @@ message( STATUS "======================================")
 message( STATUS "")
 message( STATUS "   Configuration: ${CMAKE_BUILD_TYPE}")
 message( STATUS "")
+

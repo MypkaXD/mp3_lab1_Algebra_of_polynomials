@@ -316,13 +316,46 @@ public:
 		Polynom res;
 		auto it = begin();
 		auto pit = p.begin();
-		while (it != end()) {
-			res.addMonom(*it);
-			++it;
-		}
-		while (pit != p.end()) {
-			res.addMonom(*pit);
-			++pit;
+		List<Monom>::iterator i;
+		while (it != end() && pit != end()) {
+			int c = (*it).comp(*pit);
+			if (c == 0) {
+				if (res.data.empty()) {
+					res.data.push_front((*it) + (*pit));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*it) + (*pit));
+					++i;
+				}
+				++it;
+				++pit;
+			}
+
+			if (c == -1) {
+				if (res.data.empty()) {
+					res.data.push_front((*it));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*it));
+					++i;
+				}
+				++it;
+			}
+
+			if (c == 1) {
+				if (res.data.empty()) {
+					res.data.push_front((*pit));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*pit));
+					++i;
+				}
+				++pit;
+			}
+
 		}
 		return res;
 
@@ -332,13 +365,46 @@ public:
 		Polynom res;
 		auto it = begin();
 		auto pit = p.begin();
-		while (it != end()) {
-			res.addMonom(*it);
-			++it;
-		}
-		while (pit != p.end()) {
-			res.addMonom((*pit) * (-1));
-			++pit;
+		List<Monom>::iterator i;
+		while (it != end() && pit != end()) {
+			int c = (*it).comp(*pit);
+			if (c == 0) {
+				if (res.data.empty()) {
+					res.data.push_front((*it) + (*pit));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*it) - (*pit));
+					++i;
+				}
+				++it;
+				++pit;
+			}
+
+			if (c == -1) {
+				if (res.data.empty()) {
+					res.data.push_front((*it));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*it));
+					++i;
+				}
+				++it;
+			}
+
+			if (c == 1) {
+				if (res.data.empty()) {
+					res.data.push_front((*pit) * (-1));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*pit));
+					++i;
+				}
+				++pit;
+			}
+
 		}
 		return res;
 	}
@@ -385,20 +451,101 @@ public:
 	}
 
 	Polynom& operator+=(const Polynom& p) {
+		Polynom res;
+		auto it = begin();
 		auto pit = p.begin();
-		while (pit != p.end()) {
-			addMonom(*pit);
-			++pit;
+		List<Monom>::iterator i;
+		while (it != end() && pit != end()) {
+			int c = (*it).comp(*pit);
+			if (c == 0) {
+				if (res.data.empty()) {
+					res.data.push_front((*it) + (*pit));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*it) + (*pit));
+					++i;
+				}
+				++it;
+				++pit;
+			}
+
+			if (c == -1) {
+				if (res.data.empty()) {
+					res.data.push_front((*it));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*it));
+					++i;
+				}
+				++it;
+			}
+
+			if (c == 1) {
+				if (res.data.empty()) {
+					res.data.push_front((*pit));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*pit));
+					++i;
+				}
+				++pit;
+			}
+
 		}
+		*this = res;
 		return *this;
 	}
 
 	Polynom& operator-=(const Polynom& p) {
+
+		Polynom res;
+		auto it = begin();
 		auto pit = p.begin();
-		while (pit != p.end()) {
-			addMonom((*pit) * (-1));
-			++pit;
+		List<Monom>::iterator i;
+		while (it != end() && pit != end()) {
+			int c = (*it).comp(*pit);
+			if (c == 0) {
+				if (res.data.empty()) {
+					res.data.push_front((*it) + (*pit));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*it) - (*pit));
+					++i;
+				}
+				++it;
+				++pit;
+			}
+
+			if (c == -1) {
+				if (res.data.empty()) {
+					res.data.push_front((*it));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*it));
+					++i;
+				}
+				++it;
+			}
+
+			if (c == 1) {
+				if (res.data.empty()) {
+					res.data.push_front((*pit) * (-1));
+					i = res.begin();
+				}
+				else {
+					res.data.insert_after(i, (*pit));
+					++i;
+				}
+				++pit;
+			}
+
 		}
+		*this = res;
 		return *this;
 	}
 
