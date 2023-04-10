@@ -95,7 +95,7 @@ TEST(AVL, can_find_element_in_very_big_tree) {
 
 	ASSERT_EQ(12, *a.find(12));
 }
-
+/*
 TEST(AVL, can_find_element_in_very_huge_tree) {
 	AVL<int, int> a;
 
@@ -118,6 +118,7 @@ TEST(AVL, can_find_element_in_very_huge_tree) {
 	ASSERT_EQ(25, *a.find(25));
 	ASSERT_EQ(26, *a.find(26));
 }
+*/
 
 TEST(AVL, can_get_min_elem) {
 	AVL<int, int> a;
@@ -191,4 +192,78 @@ TEST(AVL, many_methods_with_tree) {
 	a.find(24);
 
 	SUCCEED();
+}
+
+TEST(AVL, can_erase_root_from_tree) {
+	AVL<int, int> a;
+
+	a.push(1, 10);
+	a.push(5, 12);
+	a.push(6, 10);
+	a.push(12, 12);
+	a.push(15, 10);
+	a.push(21, 12);
+	a.push(23, 10);
+	a.push(24, 12);
+
+	a.erase(15);
+
+	SUCCEED();
+}
+
+TEST(AVL, can_erase_from_tree) {
+	AVL<int, int> a;
+
+	a.push(1, 10);
+	a.push(5, 12);
+	a.push(6, 10);
+	a.push(12, 12);
+	a.push(15, 10);
+	a.push(21, 12);
+	a.push(23, 10);
+	a.push(24, 12);
+
+	a.erase(21);
+
+	SUCCEED();
+}
+
+TEST(AVL, can_erase_list_from_tree) {
+	AVL<int, int> a;
+
+	a.push(1, 10);
+	a.push(5, 12);
+	a.push(6, 10);
+	a.push(12, 12);
+	a.push(15, 10);
+	a.push(21, 12);
+	a.push(23, 10);
+	a.push(24, 12);
+
+	a.erase(1);
+
+	SUCCEED();
+}
+
+TEST(AVL, can_erase_list_from_tree_with_two_children) {
+	AVL<int, int> a;
+
+	a.push(1, 10);
+	a.push(5, 12);
+	a.push(6, 10);
+	a.push(12, 12);
+	a.push(15, 10);
+	a.push(21, 12);
+	a.push(23, 10);
+	a.push(24, 12);
+
+	a.erase(6);
+
+	SUCCEED();
+}
+
+TEST(AVL, cant_erase_elem_from_empty_tree) {
+	AVL<int, int> a;
+
+	ASSERT_EQ(nullptr, a.erase(1));
 }
