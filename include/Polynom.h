@@ -24,11 +24,11 @@ class Polynom {
 			z = m.z;
 		}
 
-		Monom& operator=(const Monom& m) {
-			coef = m.coef;
-			x = m.x;
-			y = m.y;
-			z = m.z;
+		Monom& operator=(const Monom& other) {
+			coef = other.coef;
+			x = other.x;
+			y = other.y;
+			z = other.z;
 			return *this;
 		}
 
@@ -92,43 +92,42 @@ class Polynom {
 				return false;
 		}
 
-		Monom& operator+=(const Monom& m) {
+		Monom& operator+=(const Monom& other) {
 
-			if (x == m.x && y == m.y && z == m.z)
-				coef += m.coef;
+			if (x == other.x && y == other.y && z == other.z)
+				coef += other.coef;
 			else
 				throw std::exception("CANT SUM UNEQUAL MONOMS");
 
 			return *this;
 		}
 
-		Monom operator+(const Monom& m) const {
+		Monom operator+(const Monom& other) const {
 
-			if (x == m.x && y == m.y && z == m.z)
-				return Monom(coef + m.coef, x, y, z);
+			if (x == other.x && y == other.y && z == other.z)
+				return Monom(coef + other.coef, x, y, z);
+			else
+				throw std::exception("CANT SUM UNEQUAL MONOMS");
+		}
+
+		Monom operator-(const Monom& other) const {
+
+			if (x == other.x && y == other.y && z == other.z)
+				return Monom(coef - other.coef, x, y, z);
 			else
 				throw std::exception("CANT SUM UNEQUAL MONOMS");
 
 		}
 
-		Monom operator-(const Monom& m) const {
+		Monom operator/(const Monom& other) const {
 
-			if (x == m.x && y == m.y && z == m.z)
-				return Monom(coef - m.coef, x, y, z);
-			else
-				throw std::exception("CANT SUM UNEQUAL MONOMS");
+			return Monom(coef / other.coef, x - other.x, y - other.y, z - other.z);
 
 		}
 
-		Monom operator/(const Monom& m) const {
+		Monom operator*(const Monom& other) const {
 
-			return Monom(coef / m.coef, x - m.x, y - m.y, z - m.z);
-
-		}
-
-		Monom operator*(const Monom& m) const {
-
-			return Monom(coef * m.coef, x + m.x, y + m.y, z + m.z);
+			return Monom(coef * other.coef, x + other.x, y + other.y, z + other.z);
 
 		}
 
@@ -137,7 +136,6 @@ class Polynom {
 			return Monom(coef * c, x, y, z);
 
 		}
-
 	};
 
 	List<Monom> data;
@@ -243,8 +241,29 @@ public:
 		return res / 10;
 	}
 
+	/*
+	Polynom(const std::string& other) {
 
-	//Assuming that str contains only one polinom and it is valid. Example: "12 4 15 1 .4 21 1 1 9.7 0 1 0"
+		state cv = Polynom::state::wait_coef;
+
+		for (size_t count = 0; count < other.size(); ++count) {
+			switch (cv)
+			{
+			case Polynom::state::wait_coef:
+				if ((other[count] >= (int)'0' && other[count] <= (int)'9'))
+					cv = Polynom::state::wait_coef_or_point_or_letters;
+				else
+					cv = Polynom::state::error;
+				break;
+			case Polynom::state::wait_coef_or_point_or_letters:
+
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	*/
 	Polynom(const char* str) {
 
 		int counter = 0;
@@ -291,6 +310,14 @@ public:
 		}
 
 	}
+
+	enum class state {
+		wait_coef,
+		wait_coef_or_point_or_letters,
+
+
+		error
+	};
 
 	bool operator==(const Polynom& other) const noexcept { // ������ ��� ��������� ���� xDD
 		for (auto count = data.begin(), count_other = other.data.begin(); count != data.end(), count_other != other.data.end(); ++count, ++count_other)

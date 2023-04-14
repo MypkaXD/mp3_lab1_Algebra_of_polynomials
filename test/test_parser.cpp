@@ -1,5 +1,5 @@
 #include "Polynom.h"
-#include <gtest.h>
+#include <gtest/gtest.h>
 
 TEST(Polynom, can_read_polynom) {
 
