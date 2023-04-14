@@ -5,6 +5,7 @@
 #include "Forward_List.h"
 
 #include "AVL.h"
+#include "HashChain.h"
 
 int main(int argc, char** argv)
 {
