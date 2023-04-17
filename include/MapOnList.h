@@ -1,22 +1,25 @@
 #pragma once
+#include <list>
 
-template<class T>
+template<class Tkey, class T>
 class MapOnList {
-	std::list <std::pair<int, T>> data;
+	std::list <std::pair<Tkey, T>> data;
+	int (*comp)(Tkey, Tkey);
 public:
-	MapOnList() {
+	MapOnList(int (*compPtr)(Tkey, Tkey)) {
+		comp = compPtr;
 	}
 
-	typename std::list<std::pair<int, T>>::iterator find(int key) {
+	typename std::list<std::pair<Tkey, T>>::iterator find(Tkey key) {
 		auto count = data.begin();
 		for (count; count != data.end(); ++count) {
-			if ((*count).first == key)
+			if (comp((*count).first, key) == 0)
 				return count;
 		}
 		return data.end();
 	}
 
-	void push(int key, T value) {
+	void push(Tkey key, T value) {
 		auto i = find(key);
 		if (i == data.end())
 			data.push_back({ key,value });
@@ -25,7 +28,7 @@ public:
 		}
 	}
 
-	void erase(int key) {
+	void erase(Tkey key) {
 		auto i = find(key);
 		if (i == data.end())
 			throw std::exception("ERROR: can't delete");

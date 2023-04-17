@@ -194,6 +194,13 @@ public:
 		return *this;
 	}
 
+	bool isDigit(char c) {
+		if (((int)c - 48) < 0 || (((int)c - 48)) > 9)
+			return false;
+		else
+			return true;
+	}
+
 	double stod(const char* str, int n) {
 		double res = 0;
 		double power = 1;                                //after dot
@@ -213,6 +220,10 @@ public:
 					return res;
 			}
 			res *= 10.0;
+
+			if (!isDigit(str[i]))
+				throw std::exception("invalid input");
+
 			res += (double)((int)str[i] - 48);
 			i++;
 		}
@@ -220,6 +231,10 @@ public:
 
 		while (i < n) {
 			power /= 10.0;
+
+			if (!isDigit(str[i]))
+				throw std::exception("invalid input");
+
 			res += power * ((double)((int)str[i] - 48));
 			i++;
 		}
@@ -235,6 +250,10 @@ public:
 		int i = 0;
 		while (i < n) {
 			res += ((int)str[i] - 48);
+
+			if (!isDigit(str[i]))
+				throw std::exception("invalid input");
+
 			res *= 10;
 			i++;
 		}
@@ -266,47 +285,51 @@ public:
 	*/
 	Polynom(const char* str) {
 
-		int counter = 0;
 		int i = 0;
 
 		double c;
 		int nx, ny, nz;
 		int j;
+		bool writing = false;
 
 		for (j = 0; true; j++) {
-			if (str[j] == ' ' || str[j] == '\0') {
-				if (counter == 0) {                         //coefficient
+			
+			if (isDigit(str[j]))
+				writing = true;
+
+			if (writing) {
+				if (str[j] == 'x') {                         //coefficient
 					c = stod(str + i, j - i);
-					j++;
+					j += 2;
 					i = j;
-					counter++;
 				}
 
-				else if (counter == 1) {                    //x
+				else if (str[j] == 'y') {                    //x
 					nx = stoi(str + i, j - i);
-					j++;
+					j += 2;
 					i = j;
-					counter++;
 				}
 
-				else if (counter == 2) {                    //y
+				else if (str[j] == 'z') {                    //y
 					ny = stoi(str + i, j - i);
-					j++;
+					j += 2;
 					i = j;
-					counter++;
 				}
 
-				else if (counter == 3) {                    //z + push parsed monom
+				else if (str[j] == ' ') {                    //z + push parsed monom
 					nz = stoi(str + i, j - i);
 					j++;
 					i = j;
 					addMonom(Monom(c, nx, ny, nz));
-					counter = 0;
 					if (str[j - 1] == '\0')
 						break;
+					writing = false;
 				}
-
 			}
+			else {
+				i = j + 1;
+			}
+
 		}
 
 	}
