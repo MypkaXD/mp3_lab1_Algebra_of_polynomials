@@ -50,7 +50,7 @@ class AVL {
 		return smallLeftRotation(n);
 	}
 
-	Node* bigRighttRotation(Node* n) {
+	Node* bigRightRotation(Node* n) {
 		n->m_left = smallLeftRotation(n->m_left);
 		return smallRightRotation(n);
 	}
