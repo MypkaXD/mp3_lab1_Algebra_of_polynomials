@@ -1,4 +1,4 @@
-﻿
+﻿#pragma once
 #include <initializer_list>
 template <class T>
 class List {
@@ -105,6 +105,10 @@ public:
 		}
 		T& next() {
 			return m_ptr->m_next->m_elem;
+		}
+
+		bool isLast() {
+			return m_ptr->m_next == nullptr;
 		}
 		bool operator!=(iterator& second) {
 			return (m_ptr != second.m_ptr);
