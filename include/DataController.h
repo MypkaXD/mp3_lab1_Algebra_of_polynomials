@@ -52,7 +52,7 @@ public:
 
 	
 
-	bool strStartCmp(const char* str1, const char* str2) {
+	bool strStartCmp(std::string str1, std::string str2) {
 		int i = 0;
 		while (str1[i] != '\0' && str2[i] != '\0') {
 			if (str1[i] != str2[i])
