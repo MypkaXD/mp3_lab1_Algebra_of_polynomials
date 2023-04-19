@@ -15,8 +15,6 @@ private:
 	int isFunc(const char* s, int cur);
 	int start(const char i, int c);
 	int afterOperator(const char i, int c);
-	int firstPart(const char i, int c);
-	int secondPart(const char i, int c);
 	int afterCloseBracket(const char i, int c);
 	int name(const char i, int c);
 	int end(const char i, int c);
@@ -32,7 +30,7 @@ FSMValidator::FSMValidator() : state(States::START) {}
 
 
 int FSMValidator::isFunc(const char* s, int cur) {
-	
+	/*
 	for (int i = 0; s[i] != '\0'; i++) {
 		if (name_log[i] == '\0' && findType(s[i]) != Chars::CHAR && findType(s[i]) != Chars::DECIMAL) {
 			push(cur);
@@ -65,7 +63,7 @@ int FSMValidator::isFunc(const char* s, int cur) {
 			break;
 		}
 	}
-
+	*/
 	return 0;
 }
 
@@ -135,7 +133,7 @@ int FSMValidator::findType(const char i) {
 
 	for (char a : sps) {
 		if (a == i)
-			return Chars::SPACE;
+			return Chars::SPACE_;
 	}
 
 	return Chars::NOT_VALID;
@@ -148,7 +146,7 @@ int FSMValidator::start(const char i, int c) {
 	switch (type)
 	{
 
-	case Chars::SPACE:
+	case Chars::SPACE_:
 		return States::START;
 
 	case Chars::OPEN_BRACKET:
@@ -158,14 +156,6 @@ int FSMValidator::start(const char i, int c) {
 	case Chars::MINUS:
 		push(c);
 		return States::AFTER_OPERATOR;
-
-	case Chars::DECIMAL:
-		push(c);
-		return States::FIRST_PART;
-
-	case Chars::DOT:
-		push(c);
-		return States::SECOND_PART;
 
 	case Chars::CHAR:
 		push(c);
@@ -183,20 +173,12 @@ int FSMValidator::afterOperator(const char i, int c) {
 	switch (type)
 	{
 
-	case Chars::SPACE:
+	case Chars::SPACE_:
 		return States::AFTER_OPERATOR;
 
 	case Chars::OPEN_BRACKET:
 		push(c);
 		return States::START;
-
-	case Chars::DECIMAL:
-		push(c);
-		return States::FIRST_PART;
-
-	case Chars::DOT:
-		push(c);
-		return States::SECOND_PART;
 
 	case Chars::CHAR:
 		push(c);
@@ -214,7 +196,7 @@ int FSMValidator::name(const char i, int c) {
 	switch (type)
 	{
 
-	case Chars::SPACE:
+	case Chars::SPACE_:
 		push(c - 1);
 		return States::END;
 
@@ -245,86 +227,13 @@ int FSMValidator::name(const char i, int c) {
 	}
 }
 
-int FSMValidator::firstPart(const char i, int c) {
-	int type = findType(i);
-	//std::cout << " /" << type << "/ ";
-	switch (type)
-	{
-
-	case Chars::SPACE:
-		push(c - 1);
-		return States::END;
-
-	case Chars::DECIMAL:
-		return States::FIRST_PART;
-
-	case Chars::DOT:
-		return States::SECOND_PART;
-
-	case Chars::OPERATOR:
-		push(c - 1);
-		push(c);
-		return States::AFTER_OPERATOR;
-
-	case Chars::MINUS:
-		push(c - 1);
-		push(c);
-		return States::AFTER_OPERATOR;
-
-	case Chars::CLOSE_BRACKET:
-		push(c - 1);
-		push(c);
-		return States::AFTER_CLOSE_BRACKET;
-
-	default:
-		return States::FAIL;
-
-	}
-
-}
-
-int FSMValidator::secondPart(const char i, int c) {
-	int type = findType(i);
-	//std::cout << " /" << type << "/ ";
-	switch (type)
-	{
-
-	case Chars::SPACE:
-		push(c - 1);
-		return States::END;
-
-	case Chars::OPERATOR:
-		push(c - 1);
-		push(c);
-		return States::AFTER_OPERATOR;
-
-	case Chars::MINUS:
-		push(c - 1);
-		push(c);
-		return States::AFTER_OPERATOR;
-
-	case Chars::DECIMAL:
-		return States::SECOND_PART;
-
-	case Chars::CLOSE_BRACKET:
-		push(c - 1);
-		push(c);
-		return States::AFTER_CLOSE_BRACKET;
-
-	default:
-		return States::FAIL;
-
-	}
-
-}
-
 int FSMValidator::afterCloseBracket(const char i, int c) {
 	int type = findType(i);
 	//std::cout << " /" << type << "/ ";
 	switch (type)
 	{
 
-	case Chars::SPACE:
+	case Chars::SPACE_:
 		return States::AFTER_CLOSE_BRACKET;
 
 	case Chars::OPERATOR:
@@ -347,7 +256,7 @@ int FSMValidator::end(const char i, int c) {
 	switch (type)
 	{
 
-	case Chars::SPACE:
+	case Chars::SPACE_:
 		return States::END;
 
 	case Chars::OPERATOR:
@@ -393,14 +302,6 @@ void FSMValidator::validate(const char* str, std::queue<int>& r) {
 				state = start(str[i], i);
 			break;
 
-		case States::FIRST_PART:
-			state = firstPart(str[i], i);
-			break;
-
-		case States::SECOND_PART:
-			state = secondPart(str[i], i);
-			break;
-
 		case States::AFTER_OPERATOR:
 			skip = isFunc(str + i, i);
 			if (skip > 0) {
@@ -433,7 +334,7 @@ void FSMValidator::validate(const char* str, std::queue<int>& r) {
 		//std::cout << state;
 	}
 
-	if (state == States::FIRST_PART || state == States::SECOND_PART || state == States::NAME)
+	if (state == States::NAME)
 		push(i - 1);
 
 	if (state == States::AFTER_OPERATOR || state == States::FAIL) {

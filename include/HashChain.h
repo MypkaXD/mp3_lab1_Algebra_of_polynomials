@@ -3,9 +3,10 @@
 #include <exception>
 #include <vector>
 #include <string>
+#include "Table.h"
 
 template<class T>
-class HashChain {
+class HashChain : public Table<std::string, T> {
 	std::vector<List<std::pair<std::string, T>>> data;
 	const int X = 3;
 	const int M = 101;
@@ -14,7 +15,7 @@ public:
 		data = std::vector<List<typename std::pair<std::string, T>>>(M);
 	}
 
-	int hash(std::string s) {
+	int hash(std::string s) const {
 		int h = 0;
 		int i = 0;
 		int x = 1;
@@ -25,7 +26,7 @@ public:
 		return h % M;
 	}
 
-	T find(std::string key) {
+	T find(std::string key) const {
 		int h = hash(key);
 		for (auto it = data[h].begin(); it != data[h].end(); ++it) {
 			if ((*it).first == key) {

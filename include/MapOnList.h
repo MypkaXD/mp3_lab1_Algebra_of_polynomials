@@ -1,8 +1,9 @@
 #pragma once
 #include <list>
+#include "Table.h"
 
 template<class Tkey, class T>
-class MapOnList {
+class MapOnList : public Table<Tkey, T> {
 	std::list <std::pair<Tkey, T>> data;
 	int (*comp)(Tkey, Tkey);
 public:
@@ -10,7 +11,16 @@ public:
 		comp = compPtr;
 	}
 
-	typename std::list<std::pair<Tkey, T>>::iterator find(Tkey key) {
+	T find(Tkey key) const {
+		auto count = data.begin();
+		for (count; count != data.end(); ++count) {
+			if (comp((*count).first, key) == 0)
+				return (*count).second;
+		}
+		return T();
+	}
+
+	typename std::list<std::pair<Tkey, T>>::iterator findIter(Tkey key) {
 		auto count = data.begin();
 		for (count; count != data.end(); ++count) {
 			if (comp((*count).first, key) == 0)
@@ -20,7 +30,7 @@ public:
 	}
 
 	void push(Tkey key, T value) {
-		auto i = find(key);
+		auto i = findIter(key);
 		if (i == data.end())
 			data.push_back({ key,value });
 		else {
@@ -29,7 +39,7 @@ public:
 	}
 
 	void erase(Tkey key) {
-		auto i = find(key);
+		auto i = findIter(key);
 		if (i == data.end())
 			throw std::exception("ERROR: can't delete");
 		else {

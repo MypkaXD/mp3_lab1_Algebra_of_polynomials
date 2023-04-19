@@ -2,9 +2,10 @@
 #include <exception>
 #include <vector>
 #include <string>
+#include "Table.h"
 
 template<class T>
-class HashRefresh {
+class HashRefresh : public Table<std::string, T> {
 	std::vector<std::pair<std::string, T>> data;
 	std::vector<bool> isValid;                  //was this thing deleted
 	std::vector<bool> isFilled;                 //is there anything
@@ -25,7 +26,7 @@ public:
 		N = 0;
 	}
 
-	int hash(std::string s) {
+	int hash(std::string s) const {
 		int h = 0;
 		int i = 0;
 		int x = 1;
@@ -36,7 +37,7 @@ public:
 		return h % M;
 	}
 
-	T find(std::string key) {
+	T find(std::string key) const {
 		int h = hash(key);
 		
 		while (isFilled[h]) {

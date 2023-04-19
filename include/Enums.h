@@ -8,8 +8,6 @@
 
 	enum States {
 		START,
-		FIRST_PART,
-		SECOND_PART,
 		AFTER_OPERATOR,
 		AFTER_CLOSE_BRACKET,
 		END,
@@ -27,14 +25,15 @@
 	const char clb[1] = { ')' };
 	const char min[1] = { '-' };
 	//special names
+	/*
 	const char* name_sin = "sin";
 	const char* name_exp = "exp";
 	const char* name_log = "log";
-
+	*/
 	enum Chars {
 		DECIMAL,
 		OPERATOR,
-		SPACE,
+		SPACE_,
 		DOT,
 		OPEN_BRACKET,
 		CLOSE_BRACKET,
@@ -55,7 +54,6 @@
 		OP_B,
 		CL_B,
 		VAR,
-		NUMBER,
 		SIN,
 		LOG,
 		EXP,

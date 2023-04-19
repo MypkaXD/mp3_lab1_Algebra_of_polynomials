@@ -22,40 +22,7 @@ public:
 
 PFormer::PFormer() {}
 
-int PFormer::tokenType(const char* ptr, int len) { //for variables, functions and numbers
-	
-	for (char b : dec) {
-		if (b == ptr[0])
-			return TokenId::NUMBER;
-	}
-	if (dot[0] == ptr[0])
-		return TokenId::NUMBER;
-	
-	int i;
-	for (i = 0; i < len; i++) {
-		if (ptr[i] != name_log[i]) {
-			break;
-		}
-	}
-	//std::cout << len;
-	if (i == len)
-		return TokenId::LOG;
-
-	for (i = 0; i < len; i++) {
-		if (ptr[i] != name_exp[i]) {
-			break;
-		}
-	}
-	if (i == len)
-		return TokenId::EXP;
-
-	for (i = 0; i < len; i++) {
-		if (ptr[i] != name_sin[i]) {
-			break;
-		}
-	}
-	if (i == len)
-		return TokenId::SIN;
+int PFormer::tokenType(const char* ptr, int len) { //for variables
 
 	return TokenId::VAR;
 }
@@ -162,10 +129,7 @@ void PFormer::buildPrefix(const char* str, std::queue<int>& iForm) {
 		default:                                                                  //only numbers and names
 			//std::cout << "case number\n";
 			int tType = tokenType(str + i, iForm.front() - i + 1);
-			if(tType == TokenId::NUMBER || tType == TokenId::VAR)
-				pForm.push(Token(tType, TokenPrio::NAME_, str + i, iForm.front() - i + 1));
-			else
-				operators.push(Token(tType, TokenPrio::UNARY_OPERATOR_, str + i, iForm.front() - i + 1));
+			pForm.push(Token(tType, TokenPrio::NAME_, str + i, iForm.front() - i + 1));
 			
 			//std::cout << iForm.front();
 			start = false;

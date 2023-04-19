@@ -1,9 +1,9 @@
 #pragma once
-
+#include "Table.h"
 #define SPACE 10
 
 template <class TKey, class TValue>
-class AVL {
+class AVL : public Table<TKey, TValue> {
 	struct Value {
 		TKey m_key = TKey(); // ключ
 		TValue m_elem = TValue();  // элемент-значение
@@ -19,10 +19,11 @@ class AVL {
 			m_data.m_elem = elem;
 		}
 	};
-	Node* m_root = nullptr; // корень дерева
-	int (*comp)(Tkey, Tkey);
 
-	Node* findNode(TKey key, Node* n) {
+	Node* m_root = nullptr; // корень дерева
+	int (*comp)(TKey, TKey);
+
+	Node* findNode(TKey key, Node* n) const {
 		if (isSubTreeEmpty(n))
 			return nullptr;
 		else if (comp(key, n->m_data.m_key) == -1)
@@ -148,17 +149,17 @@ class AVL {
 	}
 
 public:
-	AVL(int (*compPtr)(Tkey, Tkey)) {
+	AVL(int (*compPtr)(TKey, TKey)) {
 		comp = compPtr;
 	}
 
-	bool isTreeEmpty() {
+	bool isTreeEmpty() const {
 		if (!m_root)
 			return true;
 		else return false;
 	}
 
-	bool isSubTreeEmpty(Node* n) {
+	bool isSubTreeEmpty(Node* n) const {
 		if (!n)
 			return true;
 		else return false;
@@ -224,18 +225,18 @@ public:
 		m_root = rebalance(m_root);
 	}
 
-	Node* erase(TKey key) {
-		return deleteNode(m_root, key);
+	void erase(TKey key) {
+		deleteNode(m_root, key);
 	}
 
-	TValue* find(TKey key) {
+	TValue find(TKey key) const {
 		if (isTreeEmpty())
-			throw std::exception("ERROR: can't find elem in empty tree");
+			return TValue();
 		Node* temp = findNode(key, m_root);
 		if (temp == nullptr)
-			return nullptr;
+			return TValue();
 		else
-			return &temp->m_data.m_elem;
+			return temp->m_data.m_elem;
 	}
 
 	void print() {

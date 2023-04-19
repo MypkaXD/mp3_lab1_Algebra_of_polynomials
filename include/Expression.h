@@ -2,6 +2,9 @@
 #include <math.h>
 #include "FiniteStateMachineValidator.h"
 #include "PrefixFormer.h"
+#include "Table.h"
+#include <string>
+#include "Polynom.h"
 
 
 class Expression
@@ -16,7 +19,7 @@ public:
 
 	Expression();
 	Expression(const char* s);
-	double calculate();
+	Polynom calculate(const Table<std::string, Polynom>& db);
 	static double parseNumber(Token number);
 	double ask(Token& name);
 
@@ -65,12 +68,12 @@ double Expression::parseNumber(Token number) {
 
 }
 
-double Expression::calculate() {
+Polynom Expression::calculate(const Table<std::string, Polynom>& db) {
 
-	std::stack<double> numbers;
+	std::stack<Polynom> numbers;
 	Token cur;
-	double b;
-	double a;
+	Polynom b;
+	Polynom a;
 	while (!pf.empty()) {
 		cur = pf.getNext();
 		//std::cout << cur.id;
@@ -78,11 +81,7 @@ double Expression::calculate() {
 		{
 
 		case TokenId::VAR:
-			numbers.push(ask(cur));
-			break;
-
-		case TokenId::NUMBER:
-			numbers.push(parseNumber(cur));
+			numbers.push(db.find(std::string(cur.val).substr(0, cur.len)));
 			break;
 
 		case TokenId::PLS:
@@ -122,27 +121,8 @@ double Expression::calculate() {
 		case TokenId::U_MIN:
 			b = numbers.top();
 			numbers.pop();
-			numbers.push(-b);
+			numbers.push(b * Polynom("-1"));
 			break;
-
-		case TokenId::SIN:
-			b = numbers.top();
-			numbers.pop();
-			numbers.push(std::sin(b));
-			break;
-
-		case TokenId::LOG:
-			b = numbers.top();
-			numbers.pop();
-			numbers.push(std::log(b));
-			break;
-
-		case TokenId::EXP:
-			b = numbers.top();
-			numbers.pop();
-			numbers.push(std::exp(b));
-			break;
-
 		}
 		//std::cout << numbers.size();
 	}
