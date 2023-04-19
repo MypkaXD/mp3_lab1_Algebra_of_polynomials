@@ -163,4 +163,3 @@ TEST(Polynom, if_power_eq_0_return_1) {
 
 	ASSERT_EQ(p1, p2);
 }
-

@@ -110,7 +110,7 @@ TEST(AVL, can_find_element_in_very_big_tree) {
 
 	ASSERT_EQ(12, a.find(std::string(1, (char)12)));
 }
-/*
+
 TEST(AVL, can_find_element_in_very_huge_tree) {
 	AVL<int, int> a;
 
@@ -133,7 +133,6 @@ TEST(AVL, can_find_element_in_very_huge_tree) {
 	ASSERT_EQ(25, *a.find(25));
 	ASSERT_EQ(26, *a.find(26));
 }
-*/
 
 TEST(AVL, can_get_min_elem) {
 	AVL<std::string, int> a(&strComp1);
