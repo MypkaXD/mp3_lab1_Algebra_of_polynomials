@@ -107,38 +107,6 @@ class RBT {
 			}
 		}
 	}
-	bool perase(TKey first, Node* t) {
-		bool flag;
-		if (t == nullptr || t->isNIL) return false;
-		if (t->data.key > first) {
-			flag = perase(first, t->leftChild);
-		}
-		else if (t->data.key < first) {
-			flag = perase(first, t->rightChild);
-		}
-		else {
-			flag = true;
-			Node* prev = get_max_elem(t->leftChild);
-
-			Node* left = t->leftChild, * right = t->rightChild;
-			Node* x = prev->leftChild;
-			bool c = prev->color;
-
-
-			Node* oldpos = swap(t, prev);
-
-
-			if (oldpos->color == RED) { oldpos->color = BLACK; }
-			else if (oldpos->color == BLACK && c == BLACK) { balanceDelete(oldpos); }
-
-			delete t;
-			return flag;
-
-		}
-		if (!flag)
-			throw std::exception("key is not founded");
-		return flag;
-	}
 
 	void DeleteNode(TKey key, Node* n) {
 		/*
