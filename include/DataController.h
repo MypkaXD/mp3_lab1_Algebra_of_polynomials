@@ -5,6 +5,7 @@
 #include "MapOnList.h"
 #include "OrderedMap.h"
 #include "UnorderedMap.h"
+#include "RBT.h"
 #include "Polynom.h"
 #include "Expression.h"
 #include <string>
@@ -32,6 +33,7 @@ class DataController {
 	HashRefresh<Polynom> hr;
 	MapOnList<std::string, Polynom> mol = MapOnList<std::string, Polynom>(&strComp);
 	UnorderedMap<std::string, Polynom> um = UnorderedMap<std::string, Polynom>(&strComp);
+	RBT<std::string, Polynom> rbt = RBT<std::string, Polynom>(&strComp);
 
 	enum BDModes {
 		AVLm,
@@ -39,7 +41,8 @@ class DataController {
 		HC,
 		HR,
 		MOL,
-		UM
+		UM,
+		RBTm
 	};
 
 	int readMode;
@@ -108,6 +111,7 @@ public:
 			mol.push(name.substr(0, secondSpace - firstSpace - 1), p);
 			hc.push(name.substr(0, secondSpace - firstSpace - 1), p);
 			hr.push(name.substr(0, secondSpace - firstSpace - 1), p);
+			rbt.push(name.substr(0, secondSpace - firstSpace - 1), p);
 
 		}
 		else if (strStartCmp(query, "calculate ")) {
@@ -140,6 +144,10 @@ public:
 				r = e.calculate(mol);
 				break;
 
+			case BDModes::RBTm:
+				r = e.calculate(rbt);
+				break;
+
 			}
 			r.print();
 			std::cout << std::endl;
@@ -158,6 +166,8 @@ public:
 				readMode = BDModes::HR;
 			else if (strStartCmp(query + 5, "Hash Chain"))
 				readMode = BDModes::HC;
+			else if (strStartCmp(query + 5, "Red Black Tree"))
+				readMode = BDModes::RBTm;
 			else
 				throw std::exception("invalid input");
 			std::cout << "\nMode changed\n";

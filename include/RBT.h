@@ -1,5 +1,5 @@
 #pragma once
-
+#include "Table.h"
 #define SPACE 10
 
 /*
@@ -17,7 +17,7 @@
 #define BLACK true
 
 template <class TKey, class TValue>
-class RBT {
+class RBT : public Table<TKey, TValue> {
 
 	struct Value {
 		TKey key = TKey(); // ключ
@@ -44,6 +44,7 @@ class RBT {
 	};
 
 	Node* root = nullptr;
+	int (*comp)(TKey, TKey);
 
 	Node* get_min_elem(Node* n) {
 		if (isSubTreeEmpty(n))
@@ -118,12 +119,12 @@ class RBT {
 					если нарушаются свойства красно-черного дерева
 		*/
 		if (isSubTreeEmpty(n) || n->isNIL)
-			throw std::exception("ERROR: can't find key in empty tree!");
+			return;
 
 		Node* node = findNode(key, root);
 
 		if (node == nullptr || node->isNIL)
-			throw std::exception("ERROR: the key isn't founded!");
+			return;
 		else {
 			Node* prev = get_max_elem(node->leftChild);
 
@@ -309,15 +310,15 @@ class RBT {
 		return nullptr;
 	}
 
-	Node* findNode(TKey key, Node* n) {
+	Node* findNode(TKey key, Node* n) const {
 		if (isSubTreeEmpty(n))
 			return nullptr;
-		else if (key < n->data.key) {
+		else if (comp(key, n->data.key) == -1) {
 			if (n->leftChild->isNIL)
 				return nullptr;
 			else n = findNode(key, n->leftChild);
 		}
-		else if (key > n->data.key) {
+		else if (comp(key, n->data.key) == 1) {
 			if (n->rightChild->isNIL)
 				return nullptr;
 			else n = findNode(key, n->rightChild);
@@ -380,16 +381,17 @@ class RBT {
 
 public:
 
-	RBT() {
+	RBT(int (*compPtr)(TKey, TKey)) {
+		comp = compPtr;
 	}
 
-	bool isTreeEmpty() {
+	bool isTreeEmpty() const {
 		if (!root)
 			return true;
 		else return false;
 	}
 
-	bool isSubTreeEmpty(Node* n) {
+	bool isSubTreeEmpty(Node* n) const {
 		if (!n)
 			return true;
 		else return false;
@@ -428,7 +430,7 @@ public:
 			Node* temp = root;
 
 			while (temp) {
-				if (temp->data.key > key) {
+				if (comp(temp->data.key, key) == 1) {
 					if (temp->leftChild->isNIL) {
 						temp->leftChild->data.elem = elem;
 						temp->leftChild->data.key = key;
@@ -443,7 +445,7 @@ public:
 					else
 						temp = temp->leftChild;
 				}
-				else if (temp->data.key < key) {
+				else if (comp(temp->data.key, key) == -1) {
 					if (temp->rightChild->isNIL) {
 						temp->rightChild->data.elem = elem;
 						temp->rightChild->data.key = key;
@@ -461,7 +463,7 @@ public:
 					else
 						temp = temp->rightChild;
 				}
-				else if (temp->data.key == key) {
+				else if (comp(temp->data.key, key) == 0) {
 					temp->data.elem = elem;
 					temp->color = RED; // red
 					balanceInsert(temp);
@@ -479,14 +481,14 @@ public:
 		n->color = !n->color;
 	}
 
-	TValue* find(TKey key) {
+	TValue find(TKey key) const {
 		if (isTreeEmpty())
-			throw std::exception("ERROR: can't find elem in empty tree");
+			return TValue();
 		Node* temp = findNode(key, root);
 		if (temp == nullptr || temp->isNIL)
-			return nullptr;
+			return TValue();
 		else
-			return &temp->data.elem;
+			return temp->data.elem;
 	}
 
 	void print() {
