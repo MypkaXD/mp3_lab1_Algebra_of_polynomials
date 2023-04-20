@@ -45,28 +45,22 @@ class RBT {
 
 	Node* root = nullptr;
 
-	Node* get_max_elem(Node* n) {
-		if (isSubTreeEmpty(n))
-			throw std::exception("ERROR: can't get max element in empty tree");
-		else {
-			Node* temp = n;
-
-			while (temp->rightChild && !temp->rightChild->isNIL)
-				temp = temp->rightChild;
-			return temp;
-		}
-	}
-
 	Node* get_min_elem(Node* n) {
 		if (isSubTreeEmpty(n))
 			throw std::exception("ERROR: can't get min element in empty tree");
-		else {
-			Node* temp = n;
+		if (n->isNIL == true)
+			return n->parent;
+		else
+			return get_min_elem(n->leftChild);
+	}
 
-			while (temp->leftChild && !temp->leftChild->isNIL)
-				temp = temp->leftChild;
-			return temp;
-		}
+	Node* get_max_elem(Node* n) {
+		if (isSubTreeEmpty(n))
+			throw std::exception("ERROR: can't get max element in empty tree");
+		if (n->isNIL == true) 
+			return n->parent;
+		else 
+			return get_max_elem(n->rightChild);
 	}
 
 	void balanceInsert(Node* n) {
@@ -113,8 +107,40 @@ class RBT {
 			}
 		}
 	}
+	bool perase(TKey first, Node* t) {
+		bool flag;
+		if (t == nullptr || t->isNIL) return false;
+		if (t->data.key > first) {
+			flag = perase(first, t->leftChild);
+		}
+		else if (t->data.key < first) {
+			flag = perase(first, t->rightChild);
+		}
+		else {
+			flag = true;
+			Node* prev = get_max_elem(t->leftChild);
 
-	void deleteNode(Node* z, TKey key, bool check) {
+			Node* left = t->leftChild, * right = t->rightChild;
+			Node* x = prev->leftChild;
+			bool c = prev->color;
+
+
+			Node* oldpos = swap(t, prev);
+
+
+			if (oldpos->color == RED) { oldpos->color = BLACK; }
+			else if (oldpos->color == BLACK && c == BLACK) { balanceDelete(oldpos); }
+
+			delete t;
+			return flag;
+
+		}
+		if (!flag)
+			throw std::exception("key is not founded");
+		return flag;
+	}
+
+	void DeleteNode(TKey key, Node* n) {
 		/*
 			Алгоритм:
 				1) Пусть требуется удалить ключ к
@@ -123,122 +149,85 @@ class RBT {
 				4) На пути от удаленной вершины к корню перекрашивать и поднимать врешины,
 					если нарушаются свойства красно-черного дерева
 		*/
-		Node* temp;
+		if (isSubTreeEmpty(n) || n->isNIL)
+			throw std::exception("ERROR: can't find key in empty tree!");
 
-		if (check)
-			temp = findNode(key, z);
-		else temp = z;
+		Node* node = findNode(key, root);
 
-		if (temp == nullptr)
-			return;
+		if (node == nullptr || node->isNIL)
+			throw std::exception("ERROR: the key isn't founded!");
 		else {
-			if (temp->color == RED && !isSubTreeEmpty(temp->leftChild) && !isSubTreeEmpty(temp->rightChild) && !temp->leftChild->isNIL && !temp->rightChild->isNIL) {
-				Node* y = get_max_elem(temp->leftChild);
+			Node* prev = get_max_elem(node->leftChild);
 
-				Node* tempvalue = temp;					//|
-				temp->data.elem = y->data.elem;			//|
-				temp->data.key = y->data.key;			//|=> swap
-				y->data.elem = tempvalue->data.elem;	//|
-				y->data.key = tempvalue->data.key;		//|
+			Node* left = node->leftChild, * right = node->rightChild;
+			Node* x = prev->leftChild;
+			bool colortemp = prev->color;
 
-				deleteNode(y, key, false);
-			}
-			else if (temp->color == BLACK && !isSubTreeEmpty(temp->leftChild) && !isSubTreeEmpty(temp->rightChild) && !temp->leftChild->isNIL && !temp->rightChild->isNIL) {
-				Node* y = get_min_elem(temp->rightChild);
+			Node* oldpos = swap(node, prev);
 
-				Node* tempvalue = temp;					//|
-				temp->data.elem = y->data.elem;			//|
-				temp->data.key = y->data.key;			//|=> swap
-				y->data.elem = tempvalue->data.elem;	//|
-				y->data.key = tempvalue->data.key;		//|
+			if (oldpos->color == RED)
+				recolor(oldpos);
+			else if (oldpos->color == BLACK && colortemp == BLACK)
+				balanceDelete(oldpos);
 
-				deleteNode(y, key,false);
-			}
-			else if (temp->color == BLACK && ((temp->leftChild->isNIL && !temp->rightChild->isNIL) || (!temp->leftChild->isNIL && temp->rightChild->isNIL))) {
-				if (temp->leftChild->isNIL && !temp->rightChild->isNIL) {
-					temp->data.elem = temp->rightChild->data.elem;
-					temp->data.key = temp->rightChild->data.key;
-				}
-				else if (!temp->leftChild->isNIL && temp->rightChild->isNIL) {
-					temp->data.elem = temp->leftChild->data.elem;
-					temp->data.key = temp->leftChild->data.key;
-				}
-			}
-			else if (temp->color == RED && temp->rightChild->isNIL && temp->leftChild->isNIL) {
-				if (temp == temp->parent->leftChild) {
-					temp->parent->leftChild = temp->leftChild;
-					temp->leftChild->parent = temp->parent;
-				}
-				else if (temp == temp->parent->rightChild) {
-					temp->parent->rightChild = temp->leftChild;
-					temp->rightChild->parent = temp->parent;
-				}
-				delete temp->rightChild;
-				delete temp;
-			}
-			else if (temp->color == BLACK && temp->rightChild->isNIL && temp->leftChild->isNIL) {
-				if (temp == temp->parent->leftChild) {
-					temp->parent->leftChild = temp->leftChild;
-					temp->leftChild->parent = temp->parent;
-				}
-				else if (temp == temp->parent->rightChild) {
-					temp->parent->rightChild = temp->leftChild;
-					temp->rightChild->parent = temp->parent;
-				}
-				balanceDelete(temp->parent);
-				delete temp->rightChild;
-				delete temp;
-			}
+			delete node;
 		}
 	}
 
-	Node* balanceDelete(Node* n) {
-		if (n->isNIL)
-			return balanceDelete(n->parent);
-		if (n->parent == nullptr)
-			return n;
-		if (S(n)->color == RED) {
-			P(n)->color = RED;
-			S(n)->color = BLACK;
-			if (n == P(n)->leftChild)
-				smallLeftRotate(P(n));
-			else smallRightRotate(P(n));
+	void balanceDelete(Node* n) {
+		if (!n->parent) 
+			return;
+
+		Node* s = S(n), * p = P(n);
+
+		if (s->color == RED) {
+			p->color = RED;
+			s->color = BLACK;
+			if (n == p->leftChild)
+				smallLeftRotate(p);
+			else
+				smallRightRotate(p);
+				s = S(n); p = P(n);
 		}
-		if (S(n)->color == BLACK && S(n)->leftChild->color == BLACK && S(n)->rightChild->color == BLACK && P(n)->color == BLACK) {
-			S(n)->color = RED;
-			balanceDelete(P(n));
-			return n;
+
+		if (s->color == BLACK && !isSubTreeEmpty(p) && p->color == BLACK && !isSubTreeEmpty(s->leftChild) && s->leftChild->color == BLACK && !isSubTreeEmpty(s->rightChild) && s->rightChild->color == BLACK) {
+			recolor(s);
+			balanceDelete(p);
+			return;
 		}
-		if (S(n)->color == BLACK && S(n)->leftChild->color == BLACK && S(n)->rightChild->color == BLACK && P(n)->color == RED) {
-			S(n)->color = RED;
-			P(n)->color = BLACK;
-			return n;
+		else if (s->color == BLACK && !isSubTreeEmpty(p) && p->color == RED && !isSubTreeEmpty(s->leftChild) && s->leftChild->color == BLACK && !isSubTreeEmpty(s->rightChild) && s->rightChild->color == BLACK) {
+			recolor(s);
+			recolor(p);
+			return;
 		}
-		if (S(n)->color == BLACK && (P(n)->color == RED || P(n)->color == BLACK)) {
-			if (n == P(n)->leftChild) {
-				if (S(n)->leftChild->color == RED && S(n)->rightChild->color == BLACK) {
-					S(n)->color = RED;
-					S(n)->leftChild->color = BLACK;
-					smallRightRotate(S(n));
-				}
-				S(n)->color = P(n)->color;
-				P(n)->color = BLACK;
-				S(n)->rightChild->color = BLACK;
-				smallLeftRotate(P(n));
+		else if (n == p->leftChild) {
+			if (!isSubTreeEmpty(s->leftChild) && s->leftChild->color == RED && !isSubTreeEmpty(s->rightChild) && s->rightChild->color == BLACK) {
+				s->color = RED;
+				recolor(s->leftChild);
+				smallRightRotate(s);
+				s = S(n); p = P(n);
 			}
-			else if (n == P(n)->rightChild) {
-				if (S(n)->rightChild->color == RED && S(n)->leftChild->color == BLACK) {
-					S(n)->color = RED;
-					S(n)->rightChild->color = BLACK;
-					smallLeftRotate(S(n));
-				}
-				S(n)->color = P(n)->color;
-				P(n)->color = BLACK;
-				S(n)->leftChild->color = BLACK;
-				smallRightRotate(P(n));
-			}
+			s->color = p->color;
+			p->color = BLACK;
+			if (!isSubTreeEmpty(s) && !isSubTreeEmpty(s->rightChild))
+				s->rightChild->color = BLACK;
+			smallLeftRotate(p);
 		}
-		return n;
+		else if (n == p->rightChild) {
+			if (!isSubTreeEmpty(s->rightChild) && s->rightChild->color == RED && !isSubTreeEmpty(s->leftChild) && s->leftChild->color == BLACK) {
+				s->color = RED;
+				recolor(s->rightChild);
+				smallLeftRotate(s);
+				s = S(n); p = P(n);
+			}
+
+			s->color = p->color;
+			p->color = BLACK;
+			if (!isSubTreeEmpty(s->leftChild))
+				s->leftChild->color = BLACK;
+
+			smallRightRotate(p);
+		}
 	}
 
 	void smallLeftRotate(Node* n) {
@@ -368,6 +357,59 @@ class RBT {
 		return n;
 	}
 
+	Node* swap(Node* n, Node* prev) {
+
+		Node* oldpos, * x = prev->leftChild;
+		if (n->parent) {
+			if (n->parent->leftChild == n)
+				n->parent->leftChild = prev;
+			else
+				n->parent->rightChild = prev;
+		}
+
+		if (n == prev) {
+			n->rightChild->parent = n->parent;
+			if (n->parent) {
+				if (n->parent->leftChild == n)
+					n->parent->leftChild = n->rightChild;
+				else
+					n->parent->rightChild = n->rightChild;
+			}
+			delete n->leftChild;
+			oldpos = n->rightChild;
+
+		}
+		else if (n->leftChild != prev) {
+			prev->leftChild->parent = prev->parent;
+			prev->parent->rightChild = prev->leftChild;
+			prev->parent = n->parent;
+
+			oldpos = prev->leftChild;
+
+			prev->leftChild = n->leftChild;
+			n->leftChild->parent = prev;
+			delete prev->rightChild;
+			prev->rightChild = n->rightChild;
+			n->rightChild->parent = prev;
+		}
+		else if (n->leftChild == prev) {
+			oldpos = prev->leftChild;
+			prev->parent = n->parent;
+			delete prev->rightChild;
+			prev->rightChild = n->rightChild;
+			n->rightChild->parent = prev;
+		}
+
+		if (n == root && n == prev)
+			root = prev->rightChild;
+		else if (n == root)
+			root = prev;
+
+		x->color = prev->color;
+		prev->color = n->color;
+		return oldpos;
+	}
+
 public:
 
 	RBT() {
@@ -462,9 +504,7 @@ public:
 	}
 
 	void erase(TKey key) {
-		if (isTreeEmpty())
-			throw std::exception("ERROR: can't erase elem in empty tree");
-		deleteNode(root, key,true);
+		DeleteNode(key, root);
 	}
 
 	void recolor(Node* n) {

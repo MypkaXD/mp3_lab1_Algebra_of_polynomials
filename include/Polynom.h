@@ -83,6 +83,10 @@ class Polynom {
 			z += i;
 		}
 
+		void changeCoef(double value) {
+			coef = value;
+		}
+
 		//for division
 		int isNotLessInEveryVariable(const Monom& m) const {
 			if (x >= m.x && y >= m.y && z >= m.z) {
@@ -671,45 +675,54 @@ public:
 	void differentiationX() { // �������������� �� ���������� x
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			if ((*count).getX() == 0)
-				continue;
-			else
+				(*count).changeCoef(0);
+			else {
+				(*count).changeCoef((*count).getCoef() * (*count).getX());
 				(*count).changeX(-1);
+			}
 		}
 	}
 
 	void differentiationY() { // �������������� �� ���������� y
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			if ((*count).getY() == 0)
-				continue;
-			else
+				(*count).changeCoef(0);
+			else {
+				(*count).changeCoef((*count).getCoef() * (*count).getY());
 				(*count).changeY(-1);
+			}
 		}
 	}
 
 	void differentiationZ() { // �������������� �� ���������� z
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			if ((*count).getZ() == 0)
-				continue;
-			else
+				(*count).changeCoef(0);
+			else {
+				(*count).changeCoef((*count).getCoef() * (*count).getZ());
 				(*count).changeZ(-1);
+			}
 		}
 	}
 
 	void integrationX() { // �������������� �� ���������� x
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			(*count).changeX(+1);
+			(*count).changeCoef((*count).getCoef() / (*count).getX());
 		}
 	}
 
 	void integrationY() { // �������������� �� ���������� y
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			(*count).changeY(+1);
+			(*count).changeCoef((*count).getCoef() / (*count).getY());
 		}
 	}
 
 	void integrationZ() { // �������������� �� ���������� z
 		for (auto count = data.begin(); count != data.end(); ++count) {
 			(*count).changeZ(+1);
+			(*count).changeCoef((*count).getCoef() / (*count).getZ());
 		}
 	}
 

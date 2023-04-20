@@ -21,6 +21,7 @@ class AVL : public Table<TKey, TValue> {
 	};
 
 	Node* m_root = nullptr; // корень дерева
+
 	int (*comp)(TKey, TKey);
 
 	Node* findNode(TKey key, Node* n) const {
@@ -152,6 +153,8 @@ public:
 	AVL(int (*compPtr)(TKey, TKey)) {
 		comp = compPtr;
 	}
+
+	AVL() {}
 
 	bool isTreeEmpty() const {
 		if (!m_root)

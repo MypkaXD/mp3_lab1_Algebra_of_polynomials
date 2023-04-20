@@ -49,8 +49,8 @@ TEST(Polynom, divs_polynoms_correctly) {
 TEST(Polynom, can_diff_X) {
 
 	Polynom p1("12x^4y^15z^1 .4x^21y^1z^1 9.7x^0y^1z^0");
-	Polynom p2("12x^3y^15z^1 .4x^20y^1z^1 9.7x^0y^1z^0");
-
+	Polynom p2("48x^3y^15z^1 8.4x^20y^1z^1 0x^0y^1z^0");
+	
 	p1.differentiationX();
 
 	ASSERT_EQ(p1, p2);
@@ -59,7 +59,7 @@ TEST(Polynom, can_diff_X) {
 TEST(Polynom, can_diff_Y) {
 
 	Polynom p1("12x^4y^15z^1 .4x^21y^1z^1 9.7x^0y^1z^0");
-	Polynom p2("12 4 14 1 .4 21 0 1 9.7 0 0 0");
+	Polynom p2("180x^4y^14z^1 .4x^21y^0z^1 9.7x^0y^0z^0");
 
 	p1.differentiationY();
 
@@ -69,7 +69,7 @@ TEST(Polynom, can_diff_Y) {
 TEST(Polynom, can_diff_Z) {
 
 	Polynom p1("12x^4y^15z^1 .4x^21y^1z^1 9.7x^0y^1z^0");
-	Polynom p2("12 4 15 0 .4 21 1 0 9.7 0 1 0");
+	Polynom p2("12x^4y^15z^0 .4x^21y^1z^0 0x^0y^1z^0");
 
 	p1.differentiationZ();
 
@@ -78,8 +78,8 @@ TEST(Polynom, can_diff_Z) {
 
 TEST(Polynom, can_intgr_X) {
 
-	Polynom p1("12x^4y^15z^1 .4x^21y^1z^1 9.7x^0y^1z^0");
-	Polynom p2("12 5 15 1 .4 22 1 1 9.7 1 1 0");
+	Polynom p1("12x^4y^15z^1 22x^21y^1z^1 9.7x^0y^1z^0");
+	Polynom p2("2.4x^5y^15z^1 1x^22y^1z^1 9.7x^1y^1z^0");
 
 	p1.integrationX();
 
@@ -88,18 +88,19 @@ TEST(Polynom, can_intgr_X) {
 
 TEST(Polynom, can_intgr_Y) {
 
-	Polynom p1("12x^4y^15z^1 .4x^21y^1z^1 9.7x^0y^1z^0");
-	Polynom p2("12 4 16 1 .4 21 2 1 9.7 0 2 0");
+	Polynom p1("12x^4y^11z^1 2x^21y^1z^1 5x^0y^4z^0");
+	Polynom p2("1x^4y^12z^1 1x^21y^2z^1 1x^0y^5z^0");
 
 	p1.integrationY();
+	p1.print();
 
 	ASSERT_EQ(p1, p2);
 }
 
 TEST(Polynom, can_intgr_Z) {
 
-	Polynom p1("12x^4y^15z^1 .4x^21y^1z^1 9.7x^0y^1z^0");
-	Polynom p2("12 4 15 2 .4 21 1 2 9.7 0 1 1");
+	Polynom p1("12x^4y^15z^1 2x^21y^1z^1 9.7x^0y^1z^0");
+	Polynom p2("6x^4y^15z^2  1x^21y^1z^2 9.7x^0y^1z^1");
 
 	p1.integrationZ();
 
