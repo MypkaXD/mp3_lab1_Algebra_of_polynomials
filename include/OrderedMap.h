@@ -1,24 +1,39 @@
 #pragma once
+#include "Table.h"
+#include <functional>
 
-template<class T>
-inline bool comp(std::pair<int, T> left, std::pair<int, T> right) {
-	return left.first < right.first;
-}
+template <class Tkey, class T>
+class compare {
+	int (*comp)(Tkey, Tkey);
+public:
+	compare(int (*compPtr)(Tkey, Tkey)) {
+		comp = compPtr;
+	}
+	bool operator() (std::pair<Tkey, T> left, std::pair<Tkey, T> right) {
+		return comp(left.first, right.first) == -1;
+	}
+};
 
-template<class T>
-class OrderedMap {
-	std::vector<std::pair<int, T>> data;
+template <class Tkey, class T>
+class OrderedMap : public Table<Tkey, T> {
+	std::vector<std::pair<Tkey, T>> data;
+	int (*comp)(Tkey, Tkey);
 public:
 
-	OrderedMap() {
+	OrderedMap(int (*compPtr)(Tkey, Tkey)) {
+		comp = compPtr;
 	}
 
-	typename std::vector<std::pair<int, T>>::iterator find(int key) {
-		return std::lower_bound(data.begin(), data.end(), std::make_pair(key, T()), comp<T>);
+	T find(Tkey key) const {
+		return (*std::lower_bound(data.begin(), data.end(), std::make_pair(key, T()), compare<Tkey, T>(comp))).second;
 	}
 
-	void push(int key, T value) {
-		auto i = find(key);
+	typename std::vector<std::pair<Tkey, T>>::iterator findIter(Tkey key) {
+		return std::lower_bound(data.begin(), data.end(), std::make_pair(key, T()), compare<Tkey, T>(comp));
+	}
+
+	void push(Tkey key, T value) {
+		auto i = findIter(key);
 		if (!data.empty()) {
 			if (i == data.end())
 				data.insert(i, std::make_pair(key, value));
@@ -29,11 +44,10 @@ public:
 			data.push_back({ key,value });
 	}
 
-	typename std::vector<std::pair<int, T>>::iterator erase(int key) {
-		auto i = find(key);
-		if (i == data.end())
-			throw std::exception("ERROR: can't delete");
-		return data.erase(find(key));
+	void erase(Tkey key) {
+		auto i = findIter(key);
+		if (i != data.end())
+			data.erase(findIter(key));
 	}
 
 	void print() {

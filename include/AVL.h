@@ -1,9 +1,9 @@
 #pragma once
-
+#include "Table.h"
 #define SPACE 10
 
 template <class TKey, class TValue>
-class AVL {
+class AVL : public Table<TKey, TValue> {
 	struct Value {
 		TKey m_key = TKey(); // ключ
 		TValue m_elem = TValue();  // элемент-значение
@@ -19,14 +19,16 @@ class AVL {
 			m_data.m_elem = elem;
 		}
 	};
-	Node* m_root = nullptr; // корень дерева
 
-	Node* findNode(TKey key, Node* n) {
+	Node* m_root = nullptr; // корень дерева
+	int (*comp)(TKey, TKey);
+
+	Node* findNode(TKey key, Node* n) const {
 		if (isSubTreeEmpty(n))
 			return nullptr;
-		else if (key < n->m_data.m_key)
+		else if (comp(key, n->m_data.m_key) == -1)
 			n = findNode(key, n->m_left);
-		else if (key > n->m_data.m_key)
+		else if (comp(key, n->m_data.m_key) == 1)
 			n = findNode(key, n->m_right);
 		return n;
 	}
@@ -107,9 +109,9 @@ class AVL {
 	Node* deleteNode(Node* n, TKey key) {
 		if (isSubTreeEmpty(n))
 			return nullptr;
-		else if (key < n->m_data.m_key)
+		else if (comp(key, n->m_data.m_key) == -1)
 			n->m_left = deleteNode(n->m_left, key);
-		else if (key > n->m_data.m_key)
+		else if (comp(key, n->m_data.m_key) == 1)
 			n->m_right = deleteNode(n->m_right, key);
 		else {
 			if (isSubTreeEmpty(n->m_left)) {
@@ -147,15 +149,17 @@ class AVL {
 	}
 
 public:
-	AVL() {}
+	AVL(int (*compPtr)(TKey, TKey)) {
+		comp = compPtr;
+	}
 
-	bool isTreeEmpty() {
+	bool isTreeEmpty() const {
 		if (!m_root)
 			return true;
 		else return false;
 	}
 
-	bool isSubTreeEmpty(Node* n) {
+	bool isSubTreeEmpty(Node* n) const {
 		if (!n)
 			return true;
 		else return false;
@@ -195,7 +199,7 @@ public:
 			Node* temp = m_root;
 
 			while (temp) {
-				if (temp->m_data.m_key > key) {
+				if (comp(temp->m_data.m_key, key) == 1) {
 					if (isSubTreeEmpty(temp->m_left)){
 						temp->m_left = new Node(key, elem);
 						break;
@@ -203,7 +207,7 @@ public:
 					else
 						temp = temp->m_left;
 				}
-				else if (temp->m_data.m_key < key) {
+				else if (comp(temp->m_data.m_key, key) == -1) {
 					if (isSubTreeEmpty(temp->m_right)) {
 						temp->m_right = new Node(key, elem);
 						break;
@@ -211,7 +215,7 @@ public:
 					else
 						temp = temp->m_right;
 				}
-				else if (temp->m_data.m_key == key) {
+				else if (comp(temp->m_data.m_key, key) == 0) {
 					temp->m_data.m_elem = elem;
 					break;
 				}
@@ -221,18 +225,18 @@ public:
 		m_root = rebalance(m_root);
 	}
 
-	Node* erase(TKey key) {
-		return deleteNode(m_root, key);
+	void erase(TKey key) {
+		deleteNode(m_root, key);
 	}
 
-	TValue* find(TKey key) {
+	TValue find(TKey key) const {
 		if (isTreeEmpty())
-			throw std::exception("ERROR: can't find elem in empty tree");
+			return TValue();
 		Node* temp = findNode(key, m_root);
 		if (temp == nullptr)
-			return nullptr;
+			return TValue();
 		else
-			return &temp->m_data.m_elem;
+			return temp->m_data.m_elem;
 	}
 
 	void print() {

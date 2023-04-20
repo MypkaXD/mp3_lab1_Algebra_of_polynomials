@@ -168,6 +168,8 @@ public:
 		if (this == &other)
 			return *this;
 		clear();
+		if (other.m_first == nullptr)
+			return *this;
 		m_first = new Node(other.m_first->m_elem);
 		Node* temp1 = m_first;
 		Node* temp2 = other.m_first->m_next;
@@ -266,7 +268,7 @@ public:
 		if (m_first == nullptr)
 			throw("ERROR: the list is emptry");
 		Node* temp = m_first->m_next;
-		delete[] m_first;
+		delete m_first;
 		m_first = temp;
 	}
 

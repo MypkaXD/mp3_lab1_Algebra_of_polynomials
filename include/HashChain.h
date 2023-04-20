@@ -2,45 +2,45 @@
 #include "Forward_List.h"
 #include <exception>
 #include <vector>
-#include <string.h>
+#include <string>
+#include "Table.h"
 
 template<class T>
-class HashChain {
-	std::vector<List<std::pair<const char*, T>>> data;
+class HashChain : public Table<std::string, T> {
+	std::vector<List<std::pair<std::string, T>>> data;
 	const int X = 3;
 	const int M = 101;
 public:
 	HashChain() {
-		data = std::vector<List<typename std::pair<const char*, T>>>(M);
+		data = std::vector<List<typename std::pair<std::string, T>>>(M);
 	}
 
-	int hash(const char* s) {
+	int hash(std::string s) const {
 		int h = 0;
 		int i = 0;
 		int x = 1;
-		while (s[i] != '\0') {
-			h += (int)s[i] * x;
+		for (char i : s) {
+			h += (int)i * x;
 			x *= X;
-			i++;
 		}
 		return h % M;
 	}
 
-	T find(const char* key) {
+	T find(std::string key) const {
 		int h = hash(key);
 		for (auto it = data[h].begin(); it != data[h].end(); ++it) {
-			if (strcmp((*it).first, key) == 0) {
+			if ((*it).first == key) {
 				return (*it).second;
 			}
 		}
 		return T();
 	}
 
-	void push(const char* key, T value) {
+	void push(std::string key, T value) {
 		int h = hash(key);
 		bool f = true;
 		for (auto it = data[h].begin(); it != data[h].end(); ++it) {
-			if (strcmp((*it).first, key) == 0) {
+			if ((*it).first == key) {
 				f = false;
 				(*it).second = value;
 				break;
@@ -51,14 +51,14 @@ public:
 		}
 	}
 
-	void erase(const char* key) {
+	void erase(std::string key) {
 		int h = hash(key);
 		bool f = true;
-		if (strcmp((*(data[h].begin())).first, key) == 0)
+		if ((*(data[h].begin())).first == key)
 			data[h].pop_front();
 		else {
 			for (auto it = data[h].begin(); !it.isLast(); ++it) {
-				if (strcmp(it.next().first, key) == 0) {
+				if (it.next().first == key) {
 					f = false;
 					data[h].erase_after(it);
 					break;

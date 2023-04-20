@@ -194,6 +194,20 @@ public:
 		return *this;
 	}
 
+	bool isDigit(char c) {
+		if (((int)c - 48) < 0 || (((int)c - 48)) > 9)
+			return false;
+		else
+			return true;
+	}
+
+	int firstNonDigitOrDot(const char* s) {
+		int i = 0;
+		while (isDigit(s[i]) || s[i] == '.')
+			i++;
+		return i;
+	}
+
 	double stod(const char* str, int n) {
 		double res = 0;
 		double power = 1;                                //after dot
@@ -213,6 +227,10 @@ public:
 					return res;
 			}
 			res *= 10.0;
+
+			if (!isDigit(str[i]))
+				throw std::exception("invalid input");
+
 			res += (double)((int)str[i] - 48);
 			i++;
 		}
@@ -220,6 +238,10 @@ public:
 
 		while (i < n) {
 			power /= 10.0;
+
+			if (!isDigit(str[i]))
+				throw std::exception("invalid input");
+
 			res += power * ((double)((int)str[i] - 48));
 			i++;
 		}
@@ -235,6 +257,10 @@ public:
 		int i = 0;
 		while (i < n) {
 			res += ((int)str[i] - 48);
+
+			if (!isDigit(str[i]))
+				throw std::exception("invalid input");
+
 			res *= 10;
 			i++;
 		}
@@ -266,58 +292,91 @@ public:
 	*/
 	Polynom(const char* str) {
 
-		int counter = 0;
 		int i = 0;
 
-		double c;
-		int nx, ny, nz;
+		double c = 0;
+		int nx = 0, ny = 0, nz = 0;
 		int j;
+		bool writing = false;
+		bool negative = false;
 
 		for (j = 0; true; j++) {
-			if (str[j] == ' ' || str[j] == '\0') {
-				if (counter == 0) {                         //coefficient
-					c = stod(str + i, j - i);
-					j++;
-					i = j;
-					counter++;
+			
+			if (isDigit(str[j]) || str[j] == 'x' || str[j] == 'y' || str[j] == 'z' || str[j] == '.')
+				writing = true;
+			if (str[j] == '+') {
+				writing = true;
+				negative = false;
+			}
+			if (str[j] == '-') {
+				if (negative || writing)
+					throw std::exception("invalid input");
+				writing = true;
+				negative = true;
+			}
+
+			if (writing) {
+
+				if (isDigit(str[j]) || str[j] == '.') {                         //coefficient
+					i = firstNonDigitOrDot(str + j);
+					
+					if(negative)
+						c = -stod(str + j, i);
+					else {
+						c = stod(str + j, i);
+					}
+					j += i - 1;
+					negative = false;
 				}
 
-				else if (counter == 1) {                    //x
-					nx = stoi(str + i, j - i);
-					j++;
-					i = j;
-					counter++;
+				else if (str[j] == 'x') {                    //x
+					if (str[j + 1] != '^')
+						throw std::exception("invalid input");
+					i = firstNonDigitOrDot(str + j + 2);
+
+					nx = stoi(str + j + 2, i);
+					j += i + 1;
 				}
 
-				else if (counter == 2) {                    //y
-					ny = stoi(str + i, j - i);
-					j++;
-					i = j;
-					counter++;
+				else if (str[j] == 'y') {                    //y
+					if (str[j + 1] != '^')
+						throw std::exception("invalid input");
+					i = firstNonDigitOrDot(str + j + 2);
+
+					ny = stoi(str + j + 2, i);
+					j += i + 1;
 				}
 
-				else if (counter == 3) {                    //z + push parsed monom
-					nz = stoi(str + i, j - i);
-					j++;
-					i = j;
+				else if (str[j] == 'z') {                    //z + push parsed monom
+					if (str[j + 1] != '^')
+						throw std::exception("invalid input");
+					i = firstNonDigitOrDot(str + j + 2);
+
+					nz = stoi(str + j + 2, i);
+					j += i + 1;
+				}
+
+				else if (str[j] == ' ') {
 					addMonom(Monom(c, nx, ny, nz));
-					counter = 0;
-					if (str[j - 1] == '\0')
-						break;
+					c = 1.0;
+					nx = 0;
+					ny = 0;
+					nz = 0;
+					writing = false;
 				}
 
+				else if (str[j] == '\0') {
+					addMonom(Monom(c, nx, ny, nz));
+					c = 1.0;
+					nx = 0;
+					ny = 0;
+					nz = 0;
+					writing = false;
+					break;
+				}
 			}
 		}
-
 	}
-
-	enum class state {
-		wait_coef,
-		wait_coef_or_point_or_letters,
-
-
-		error
-	};
 
 	bool operator==(const Polynom& other) const noexcept { // ������ ��� ��������� ���� xDD
 		for (auto count = data.begin(), count_other = other.data.begin(); count != data.end(), count_other != other.data.end(); ++count, ++count_other)
