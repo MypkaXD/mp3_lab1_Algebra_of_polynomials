@@ -110,31 +110,29 @@ TEST(AVL, can_find_element_in_very_big_tree) {
 
 	ASSERT_EQ(12, a.find(std::string(1, (char)12)));
 }
-/*
+
 TEST(AVL, can_find_element_in_very_huge_tree) {
-	AVL<int, int> a;
+	AVL<std::string, int> a(&strComp1);
 
 	for (int count = 0; count < 10000; ++count)
-		a.push(count, count);
+		a.push(std::to_string(count), count);
 
-	ASSERT_EQ(12, a.find(12));
-	ASSERT_EQ(13, a.find(13));
-	ASSERT_EQ(14, a.find(14));
-	ASSERT_EQ(15, a.find(15));
-	ASSERT_EQ(16, a.find(16));
-	ASSERT_EQ(17, a.find(17));
-	ASSERT_EQ(18, a.find(18));
-	ASSERT_EQ(19, a.find(19));
-	ASSERT_EQ(20, a.find(20));
-	ASSERT_EQ(21, a.find(21));
-	ASSERT_EQ(22, a.find(22));
-	ASSERT_EQ(23, a.find(23));
-	ASSERT_EQ(24, a.find(24));
-	ASSERT_EQ(25, a.find(25));
-	ASSERT_EQ(26, a.find(26));
+	ASSERT_EQ(12, a.find("12"));
+	ASSERT_EQ(13, a.find("13"));
+	ASSERT_EQ(14, a.find("14"));
+	ASSERT_EQ(15, a.find("15"));
+	ASSERT_EQ(16, a.find("16"));
+	ASSERT_EQ(17, a.find("17"));
+	ASSERT_EQ(18, a.find("18"));
+	ASSERT_EQ(19, a.find("19"));
+	ASSERT_EQ(20, a.find("20"));
+	ASSERT_EQ(21, a.find("21"));
+	ASSERT_EQ(22, a.find("22"));
+	ASSERT_EQ(23, a.find("23"));
+	ASSERT_EQ(24, a.find("24"));
+	ASSERT_EQ(25, a.find("25"));
+	ASSERT_EQ(26, a.find("26"));
 }
-*/
-
 
 TEST(AVL, can_get_min_elem) {
 	AVL<std::string, int> a(&strComp1);
