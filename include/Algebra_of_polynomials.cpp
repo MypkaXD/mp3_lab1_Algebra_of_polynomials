@@ -6,7 +6,7 @@ int main(int argc, char** argv) {
 	std::string s;
 
 	while (true) {
-		std::cin >> s;
+		getline(std::cin, s);
 		std::cout << std::endl;
 		if (dc.strStartCmp(s, "end"))
 			break;
