@@ -16,6 +16,37 @@ int strComp1(std::string s1, std::string s2) {
 	return 0;
 }
 
+// Шаблонная функция, которую нужно протестировать
+template <typename T>
+void push(T a) {
+	AVL<int, T> avl;
+
+	avl.push(1, a);
+	avl.print();
+}
+
+// Определение шаблонного теста
+template <typename T>
+class Test_push_in_empty_tree : public testing::Test {
+public:
+	T a = 1;
+};
+
+// Использование макроса TYPED_TEST_SUITE_P для объявления параметризованного набора тестов
+TYPED_TEST_SUITE_P(Test_push_in_empty_tree);
+
+// Определение параметризованных тестов
+TYPED_TEST_P(Test_push_in_empty_tree, ReturnsCorrectMaxValue) {
+	ASSERT_NO_THROW(push(this->a));
+}
+
+// Регистрация параметризованного набора тестов
+REGISTER_TYPED_TEST_SUITE_P(Test_push_in_empty_tree, ReturnsCorrectMaxValue);
+
+// Использование макроса INSTANTIATE_TYPED_TEST_SUITE_P для генерации конкретных наборов тестов
+typedef testing::Types<int, float, double> MyTypes;
+INSTANTIATE_TYPED_TEST_SUITE_P(My, Test_push_in_empty_tree, MyTypes);
+
 TEST(AVL, can_push_in_empty_tree) {
 	AVL<std::string, int> a(&strComp1);
 
